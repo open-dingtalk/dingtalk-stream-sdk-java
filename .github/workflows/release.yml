@@ -24,8 +24,8 @@ jobs:
       - name: Check Maven module version
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if [[ $GITHUB_REF == 'refs/heads/develop' && $VERSION != *"-SNAPSHOT"* ]]; then
-            echo "Skipping non-snapshot version $VERSION on develop branch"
+          if [[ $GITHUB_REF != 'refs/heads/main' && $VERSION != *"-SNAPSHOT"* ]]; then
+            echo "Skipping release version $VERSION on non-main branch"
             exit 0
           fi
 
