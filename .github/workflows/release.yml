@@ -1,10 +1,11 @@
 name: Build and Deploy
 
-
 on:
   push:
     branches:
       - develop
+  release:
+    types: [published]
 
 jobs:
   build:
