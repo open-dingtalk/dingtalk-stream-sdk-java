@@ -1,8 +1,10 @@
 package com.dingtalk.open.app.api.models.bot;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ChatbotMessage {
+public class ChatbotMessage implements Serializable {
+    private static final long serialVersionUID = 1L;
     String conversationId;
     List<MentionUser> atUsers;
     String chatbotCorpId;

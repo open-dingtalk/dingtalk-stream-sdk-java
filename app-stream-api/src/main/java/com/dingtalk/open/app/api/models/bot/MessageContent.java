@@ -1,8 +1,10 @@
 package com.dingtalk.open.app.api.models.bot;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MessageContent {
+public class MessageContent implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * 适用的类型：text
      */

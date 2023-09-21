@@ -1,6 +1,9 @@
 package com.dingtalk.open.app.api.models.bot;
 
-public class MentionUser {
+import java.io.Serializable;
+
+public class MentionUser implements Serializable {
+    private static final long serialVersionUID = 1L;
     String dingtalkId;
     String staffId;
 
