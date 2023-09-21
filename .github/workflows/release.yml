@@ -21,6 +21,14 @@ jobs:
           distribution: 'temurin'
           java-version: 8
 
+      - name: Check Maven module version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if [[ $GITHUB_REF == 'refs/heads/develop' && $VERSION != *"-SNAPSHOT"* ]]; then
+            echo "Skipping non-snapshot version $VERSION on develop branch"
+            exit 0
+          fi
+
       - name: Import GPG private key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
