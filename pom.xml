@@ -5,7 +5,7 @@
     <groupId>com.dingtalk.open</groupId>
     <artifactId>open-app-stream-client</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.9</version>
     <modules>
         <module>app-stream-client</module>
         <module>app-stream-api</module>
