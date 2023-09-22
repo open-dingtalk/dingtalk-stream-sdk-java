@@ -4,7 +4,7 @@ package com.dingtalk.open.app.api.callback;
  * @author feiyin
  * @date 2023/9/22
  */
-public class OpenDingTalkStreamTopics {
+public class DingTalkStreamTopics {
     /**
      * 机器人回调topic
      */
