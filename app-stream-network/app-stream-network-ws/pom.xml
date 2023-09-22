@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.dingtalk.open</groupId>
             <artifactId>app-stream-network-api</artifactId>
-            <version>1.1.0</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
