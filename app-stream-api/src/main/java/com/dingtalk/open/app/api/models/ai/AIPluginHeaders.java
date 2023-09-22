@@ -8,14 +8,14 @@ public class AIPluginHeaders {
     /**
      * plugin identity
      */
-    private final String PLUGIN_ID = "pluginId";
+    public static final String PLUGIN_ID_NAME = "pluginId";
     /**
      * plugin version
      */
-    private final String PLUGIN_VERSION_NAME = "pluginVersion";
+    public static final String PLUGIN_VERSION_NAME = "pluginVersion";
     /**
      * ability identity
      */
-    private final String ABILITY_KEY_NAME = "abilityKey";
+    public static final String ABILITY_KEY_NAME = "abilityKey";
 
 }

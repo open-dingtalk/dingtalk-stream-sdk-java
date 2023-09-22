@@ -15,6 +15,12 @@ import java.util.Map;
  */
 public class GraphUtils {
 
+    /**
+     * 返回成功json
+     *
+     * @param result
+     * @return
+     */
     public static GraphAPIResponse successJson(Object result) {
         GraphAPIResponse response = baseResponse(StatusLine.OK);
         response.setBody(JSON.toJSONString(result));
