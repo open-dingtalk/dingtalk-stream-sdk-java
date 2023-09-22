@@ -4,7 +4,7 @@ package com.dingtalk.open.app.stream.protocol;
  * @author feiyin
  * @date 2023/4/7
  */
-public class HeaderNames {
+class HeaderNames {
     public static final String TOPIC = "topic";
     public static final String MESSAGE_ID = "messageId";
     public static final String TIME = "time";

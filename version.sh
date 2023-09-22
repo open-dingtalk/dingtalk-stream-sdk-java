@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-mvn versions:set -DnewVersion=1.0.9-SNAPSHOT
+mvn versions:set -DnewVersion=1.1.0-SNAPSHOT
