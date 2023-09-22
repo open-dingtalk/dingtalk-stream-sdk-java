@@ -47,17 +47,18 @@ public class AopUtils {
 
     private static boolean instanceOf(Class clazz, String interfaceName) {
         Class<?>[] superInterfaces = clazz.getInterfaces();
-        for (Class<?> interf : superInterfaces) {
-            if (interf.getCanonicalName().equals(interfaceName)) {
+        for (Class<?> interfaceClass : superInterfaces) {
+            if (interfaceClass.getCanonicalName().equals(interfaceName)) {
                 return true;
             }
         }
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     private static Object invoke(Object object, String clazzName, String methodName, Object... args) {
         try {
-            Class klass = Class.forName(clazzName);
+            Class<?> klass = Class.forName(clazzName);
             Method method = klass.getDeclaredMethod(methodName);
             method.setAccessible(true);
             return method.invoke(object, args);

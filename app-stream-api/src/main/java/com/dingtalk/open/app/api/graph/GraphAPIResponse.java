@@ -1,4 +1,4 @@
-package com.dingtalk.open.app.api.models.graph;
+package com.dingtalk.open.app.api.graph;
 
 /**
  * @author feiyin
@@ -8,21 +8,11 @@ public class GraphAPIResponse extends GraphAPIMessage {
 
     private StatusLine statusLine;
 
-    private String body;
-
     public StatusLine getStatusLine() {
         return statusLine;
     }
 
     public void setStatusLine(StatusLine statusLine) {
         this.statusLine = statusLine;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
     }
 }

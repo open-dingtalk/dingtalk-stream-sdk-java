@@ -6,13 +6,13 @@ import java.io.Serializable;
  * @author feiyin
  * @date 2023/4/3
  */
-public interface OpenDingTalkCallbackListener<Input, Output> extends Serializable {
+public interface OpenDingTalkCallbackListener<Request, Response> extends Serializable {
 
     /**
      * 执行回调
      *
-     * @param param
+     * @param request
      * @return
      */
-    Output execute(Input param);
+    Response execute(Request request);
 }

@@ -13,7 +13,7 @@
         <module>app-stream-protocol</module>
         <module>dingtalk-stream</module>
     </modules>
-    <name>open-app-stream-client</name>
+    <name>dingtalk-stream-sdk-java</name>
     <description>stream client for dingtalk open platform</description>
     <url>https://github.com/open-dingtalk/dingtalk-stream-sdk-java</url>
     <licenses>

@@ -1,4 +1,4 @@
-package com.dingtalk.open.app.api.models.graph;
+package com.dingtalk.open.app.api.graph;
 
 /**
  * @author feiyin
