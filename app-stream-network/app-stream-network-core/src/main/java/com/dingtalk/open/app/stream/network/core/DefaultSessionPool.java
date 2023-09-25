@@ -118,7 +118,7 @@ public class DefaultSessionPool implements SessionPool {
 
         @Override
         public void receive(Context context) {
-            onRequest(context.connectionId(), context.getRequest());
+            onRequest(context.getConnectionId(), context.getRequest());
             DefaultSessionPool.this.appListener.receive(context);
         }
 

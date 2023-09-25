@@ -1,5 +1,6 @@
 package com.dingtalk.open.app.api.callback;
 
+import com.dingtalk.open.app.api.stream.OpenDingTalkStreamObserver;
 import com.dingtalk.open.app.stream.protocol.callback.CallbackResponsePayload;
 
 /**
@@ -7,12 +8,15 @@ import com.dingtalk.open.app.stream.protocol.callback.CallbackResponsePayload;
  * @date 2023/3/17
  */
 interface CallbackMethod {
-
     /**
      * 执行回调
      *
      * @param req
      * @return
      */
-    CallbackResponsePayload execute(Object req);
+    CallbackResponsePayload unaryCall(Object req);
+
+
+
+    void serverStreamCall(Object req, OpenDingTalkStreamObserver<CallbackResponsePayload> observer);
 }

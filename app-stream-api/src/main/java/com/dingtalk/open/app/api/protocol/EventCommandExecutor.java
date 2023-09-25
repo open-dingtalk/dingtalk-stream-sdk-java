@@ -65,6 +65,6 @@ public class EventCommandExecutor implements CommandExecutor {
         }
         AckPayload ackPayload = new AckPayload();
         ackPayload.setStatus(status);
-        context.replay(ackPayload);
+        context.streamReply(ackPayload, true);
     }
 }

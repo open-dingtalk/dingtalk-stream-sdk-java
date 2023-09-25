@@ -1,6 +1,7 @@
 package com.dingtalk.open.app.stream.network.rsocket;
 
 import com.alibaba.fastjson.JSON;
+import com.dingtalk.open.app.stream.network.api.AbstractContext;
 import com.dingtalk.open.app.stream.network.api.Context;
 import com.dingtalk.open.app.stream.network.api.ServiceException;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author feiyin
  * @date 2022/12/28
  */
-public class RSocketUnaryContext implements Context {
+public class RSocketUnaryContext extends AbstractContext {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(RSocketUnaryContext.class);
     private final Sinks.One<ProtocolResponse> responder;
     private final ProtocolRequestFacade request;
@@ -31,9 +32,9 @@ public class RSocketUnaryContext implements Context {
     }
 
     @Override
-    public void replay(Object payload) {
+    public void streamReply(Object payload, boolean endOfStream) {
         if (finished.compareAndSet(false, true)) {
-            ProtocolResponse response = ProtocolResponse.new200Response(request);
+            ProtocolResponse response = ProtocolResponse.new200Response(request, endOfStream);
             response.setData(JSON.toJSONString(payload));
             this.responder.tryEmitValue(response);
         }
@@ -44,15 +45,15 @@ public class RSocketUnaryContext implements Context {
         if (finished.compareAndSet(false, true)) {
             LOGGER.error("[DingTalk] write exception, id={}, type={}", request.getMessageId(), request.getType(), t);
             if (t instanceof ServiceException) {
-                this.responder.tryEmitValue(ProtocolResponse.newErrorResponse(request, ((ServiceException) t).getCode(), t.getMessage()));
+                this.responder.tryEmitValue(ProtocolResponse.newErrorResponse(request, ((ServiceException) t).getCode(), t.getMessage(), true));
             } else {
-                this.responder.tryEmitValue(ProtocolResponse.new500Response(request));
+                this.responder.tryEmitValue(ProtocolResponse.new500Response(request, t.getMessage(), true));
             }
         }
     }
 
     @Override
-    public String connectionId() {
+    public String getConnectionId() {
         return this.connectionId;
     }
 

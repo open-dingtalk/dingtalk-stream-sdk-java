@@ -1,12 +1,14 @@
 package com.dingtalk.open.app.api;
 
 import com.dingtalk.open.app.api.command.CommandDispatcher;
+import com.dingtalk.open.app.api.stream.ServerStreamCallbackListener;
 import com.dingtalk.open.app.api.util.ThreadUtil;
 import com.dingtalk.open.app.api.callback.CallbackCommandExecutor;
 import com.dingtalk.open.app.api.callback.OpenDingTalkCallbackListener;
 import com.dingtalk.open.app.api.protocol.CommandExecutor;
 import com.dingtalk.open.app.api.protocol.EventCommandExecutor;
 import com.dingtalk.open.app.api.security.DingTalkCredential;
+import com.dingtalk.open.app.stream.network.api.ServiceType;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 import com.dingtalk.open.app.stream.protocol.CommandType;
 
@@ -46,7 +48,7 @@ public class OpenDingTalkStreamClientBuilder {
     public OpenDingTalkStreamClientBuilder registerAllEventListener(GenericEventListener listener) {
         Preconditions.notNull(listener);
         this.commands.put(CommandType.EVENT, new EventCommandExecutor(Preconditions.notNull(listener)));
-        subscribe(CommandType.EVENT, "*");
+        subscribe(CommandType.EVENT, "*", ServiceType.UNARY);
         return this;
     }
 
@@ -61,7 +63,17 @@ public class OpenDingTalkStreamClientBuilder {
         Preconditions.notNull(callbackListener);
         CallbackCommandExecutor executor = (CallbackCommandExecutor) this.commands.computeIfAbsent(CommandType.CALLBACK, (key) -> new CallbackCommandExecutor());
         executor.register(topic, callbackListener);
-        subscribe(CommandType.CALLBACK, topic);
+        subscribe(CommandType.CALLBACK, topic, ServiceType.UNARY);
+        return this;
+    }
+
+
+    public <Req, Resp> OpenDingTalkStreamClientBuilder registerServerStreamCallbackListener(String topic, ServerStreamCallbackListener<Req, Resp> callbackListener) {
+        Preconditions.notNull(topic);
+        Preconditions.notNull(callbackListener);
+        CallbackCommandExecutor executor = (CallbackCommandExecutor) this.commands.computeIfAbsent(CommandType.CALLBACK, (key) -> new CallbackCommandExecutor());
+        executor.register(topic, callbackListener);
+        subscribe(CommandType.CALLBACK, topic, ServiceType.STREAM_RESPONSE);
         return this;
     }
 
@@ -110,8 +122,8 @@ public class OpenDingTalkStreamClientBuilder {
         return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions);
     }
 
-    private void subscribe(CommandType type, String topic) {
-        if (!subscriptions.add(new Subscription(type, topic))) {
+    private void subscribe(CommandType type, String topic, ServiceType serviceType) {
+        if (!subscriptions.add(new Subscription(type, topic, serviceType))) {
             throw new OpenDingTalkAppException(DingTalkAppError.DUPLICATE_TOPIC_ERROR, type.name(), topic);
         }
     }

@@ -1,5 +1,6 @@
 package com.dingtalk.open.app.stream.network.core;
 
+import com.dingtalk.open.app.stream.network.api.ServiceType;
 import com.dingtalk.open.app.stream.protocol.CommandType;
 
 import java.util.Objects;
@@ -12,12 +13,16 @@ public class Subscription {
 
     private CommandType type;
     private String topic;
+
+    private ServiceType serviceType;
+
     public Subscription() {
 
     }
-    public Subscription(CommandType type, String topic) {
+    public Subscription(CommandType type, String topic, ServiceType serviceType) {
         this.type = type;
         this.topic = topic;
+        this.serviceType = serviceType;
     }
     public CommandType getType() {
         return type;
@@ -30,6 +35,14 @@ public class Subscription {
     }
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
     }
 
     @Override

@@ -2,16 +2,21 @@ package com.dingtalk.open.app.api.callback;
 
 import com.dingtalk.open.app.api.DingTalkAppError;
 import com.dingtalk.open.app.api.OpenDingTalkAppException;
+import com.dingtalk.open.app.api.common.concurrent.DirectExecutor;
 import com.dingtalk.open.app.api.protocol.MessageConverter;
 import com.dingtalk.open.app.api.protocol.CommandExecutor;
 import com.dingtalk.open.app.api.protocol.MessageConverterMapping;
+import com.dingtalk.open.app.api.stream.OpenDingTalkStreamObserver;
+import com.dingtalk.open.app.api.stream.ServerStreamCallbackListener;
 import com.dingtalk.open.app.stream.network.api.Context;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
 import com.dingtalk.open.app.stream.protocol.ContentType;
+import com.dingtalk.open.app.stream.protocol.callback.CallbackResponsePayload;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * @author feiyin
@@ -31,6 +36,10 @@ public class CallbackCommandExecutor implements CommandExecutor {
         callbackDescriptors.put(service, CallbackDescriptor.build(callback));
     }
 
+    public void register(String service, ServerStreamCallbackListener<?, ?> callback) {
+        callbackDescriptors.put(service, CallbackDescriptor.build(callback));
+    }
+
     @Override
     public void execute(Context context) {
         CallbackDescriptor descriptor = callbackDescriptors.get(context.getRequest().getTopic());
@@ -44,15 +53,39 @@ public class CallbackCommandExecutor implements CommandExecutor {
             context.exception(DingTalkAppError.UNKNOWN_CONTENT_TYPE.toException());
             return;
         }
-        Object parameter = converter.convert(context.getRequest().getData(), descriptor.getParameterType());
-        Object payload;
+        Object parameter;
         try {
-            payload = descriptor.getMethod().execute(parameter);
+            parameter = converter.convert(context.getRequest().getData(), descriptor.getParameterType());
+        } catch (Exception e) {
+            LOGGER.error("[DingTalk] failed to cast protocol message to current parameter type", e);
+            context.exception(new OpenDingTalkAppException(DingTalkAppError.ILLEGAL_PARAMETER_TYPE));
+            return;
+        }
+        try {
+            if (descriptor.getCallbackType() == CallbackType.UNARY) {
+                context.streamReply(descriptor.getMethod().unaryCall(parameter), true);
+            } else if (descriptor.getCallbackType() == CallbackType.SERVER_STREAM) {
+                final Executor executor = context.getBizExecutor() == null ? DirectExecutor.INSTANCE : context.getBizExecutor();
+                descriptor.getMethod().serverStreamCall(parameter, new OpenDingTalkStreamObserver<CallbackResponsePayload>() {
+                    @Override
+                    public void onNext(CallbackResponsePayload callbackResponsePayload) {
+                        executor.execute(() -> context.streamReply(callbackResponsePayload, false));
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        executor.execute(() -> context.exception(t));
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        executor.execute(() -> context.streamReply(null, true));
+                    }
+                });
+            }
         } catch (Exception e) {
             LOGGER.error("[DingTalk] execute callback failed, topic={}", context.getRequest().getTopic(), e);
             context.exception(e);
-            return;
         }
-        context.replay(payload);
     }
 }

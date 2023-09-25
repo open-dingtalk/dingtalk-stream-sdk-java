@@ -25,10 +25,12 @@ public class AppServiceListener implements ClientConnectionListener {
 
     @Override
     public void receive(Context context) {
+        context.setBizExecutor(executor);
         this.executor.execute(() -> {
             try {
                 commandDispatcher.execute(context);
             } catch (Exception e) {
+                context.exception(e);
                 LOGGER.error("[DingTalk] dispatch command failed", e);
             }
         });

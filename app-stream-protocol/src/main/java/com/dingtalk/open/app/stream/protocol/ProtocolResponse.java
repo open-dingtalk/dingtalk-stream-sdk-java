@@ -57,28 +57,31 @@ public class ProtocolResponse {
         this.headers.put(headerName, headerValue);
     }
 
-    public static ProtocolResponse new200Response(ProtocolRequestFacade request) {
+    public static ProtocolResponse new200Response(ProtocolRequestFacade request, boolean endOfStream) {
         ProtocolResponse response = base(request);
         response.setCode(200);
         response.setMessage("OK");
         response.setHeader(HeaderNames.MESSAGE_ID, request.getMessageId());
         response.setHeader(HeaderNames.CONTENT_TYPE, request.getContentType());
         response.setHeader(HeaderNames.TIME, String.valueOf(System.currentTimeMillis()));
+        response.setHeader(HeaderNames.STREAM_STAGE, endOfStream ? StreamConstants.STREAM_STAGE_END : StreamConstants.STREAM_STAGE_DATA);
         return response;
     }
 
-    public static ProtocolResponse new500Response(ProtocolRequestFacade request) {
+    public static ProtocolResponse new500Response(ProtocolRequestFacade request, String message, boolean endOfStream) {
         ProtocolResponse response = base(request);
         response.setCode(500);
-        response.setMessage("client internal error");
+        response.setMessage("client internal error:" + message);
+        response.setHeader(HeaderNames.STREAM_STAGE, endOfStream ? StreamConstants.STREAM_STAGE_END : StreamConstants.STREAM_STAGE_DATA);
         return response;
     }
 
 
-    public static ProtocolResponse newErrorResponse(ProtocolRequestFacade request, int code, String msg) {
+    public static ProtocolResponse newErrorResponse(ProtocolRequestFacade request, int code, String msg, boolean endOfStream) {
         ProtocolResponse response = base(request);
         response.setCode(code);
         response.setMessage(msg);
+        response.setHeader(HeaderNames.STREAM_STAGE, endOfStream ? StreamConstants.STREAM_STAGE_END : StreamConstants.STREAM_STAGE_DATA);
         return response;
     }
 

@@ -6,18 +6,18 @@ import com.dingtalk.open.app.stream.protocol.callback.CallbackResponsePayload;
  * @author feiyin
  * @date 2023/3/17
  */
-class SimpleMethod implements CallbackMethod {
+class UnaryMethod extends CallbackMethodAdaptor {
 
     private final OpenDingTalkCallbackListener callback;
 
     @SuppressWarnings("unchecked")
-    public SimpleMethod(OpenDingTalkCallbackListener callback) {
+    public UnaryMethod(OpenDingTalkCallbackListener callback) {
         this.callback = callback;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public CallbackResponsePayload execute(Object req) {
+    public CallbackResponsePayload unaryCall(Object req) {
         CallbackResponsePayload payload = new CallbackResponsePayload();
         payload.setResponse(callback.execute(req));
         return payload;

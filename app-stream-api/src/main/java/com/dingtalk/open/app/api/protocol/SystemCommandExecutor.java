@@ -18,13 +18,13 @@ public class SystemCommandExecutor implements CommandExecutor {
     @Override
     public void execute(Context context) {
         if (SystemTopic.PING.equals(context.getRequest().getTopic())) {
-            context.replay(JSON.parseObject(context.getRequest().getData()));
+            context.streamReply(JSON.parseObject(context.getRequest().getData()), true);
             return;
         }
 
         if (SystemTopic.DISCONNECT.equals(context.getRequest().getTopic())) {
             DisconnectPayload payload = JSON.parseObject(context.getRequest().getData(), DisconnectPayload.class);
-            LOGGER.info("[DingTalk] receive connection close info, connection will close later, connectionId={}, reason={}", context.connectionId(), payload.getReason());
+            LOGGER.info("[DingTalk] receive connection close info, connection will close later, connectionId={}, reason={}", context.getConnectionId(), payload.getReason());
         }
     }
 }

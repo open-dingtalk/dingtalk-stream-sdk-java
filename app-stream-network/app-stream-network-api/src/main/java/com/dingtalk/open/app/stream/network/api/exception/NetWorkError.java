@@ -22,6 +22,12 @@ public enum NetWorkError {
     /**
      * 非法协议
      */
-    PROTOCOL_ILLEGAL;
+    PROTOCOL_ILLEGAL,
+
+    /**
+     * 不支持的协议
+     */
+    UNSUPPORTED_PROTOCOL,
+
 
 }

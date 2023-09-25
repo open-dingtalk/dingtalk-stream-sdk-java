@@ -27,6 +27,8 @@ public enum DingTalkAppError {
 
     ILLEGAL_CALLBACK(400, "10006", "illegal callback implementation"),
 
+    ILLEGAL_CALLBACK_TYPE(400, "10007", "illegal callback type"),
+
 
     REFLECTION_ERROR(500, "10008", " reflection error"),
 
@@ -43,6 +45,10 @@ public enum DingTalkAppError {
 
 
     CLIENT_STATE_ERROR(500, "10014", "client state error"),
+
+
+    ILLEGAL_PARAMETER_TYPE(400, "10015", "illegal  parameter type"),
+
 
 
     /**

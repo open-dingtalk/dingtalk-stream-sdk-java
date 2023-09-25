@@ -12,4 +12,6 @@ class HeaderNames {
     public static final String APP_ID = "appId";
     public static final String CONNECTION_ID = "connectionId";
 
+    public static final String STREAM_STAGE = "streamStage";
+
 }
