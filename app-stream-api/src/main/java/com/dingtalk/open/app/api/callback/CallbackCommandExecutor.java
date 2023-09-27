@@ -2,21 +2,18 @@ package com.dingtalk.open.app.api.callback;
 
 import com.dingtalk.open.app.api.DingTalkAppError;
 import com.dingtalk.open.app.api.OpenDingTalkAppException;
-import com.dingtalk.open.app.api.common.concurrent.DirectExecutor;
-import com.dingtalk.open.app.api.protocol.MessageConverter;
 import com.dingtalk.open.app.api.protocol.CommandExecutor;
+import com.dingtalk.open.app.api.protocol.MessageConverter;
 import com.dingtalk.open.app.api.protocol.MessageConverterMapping;
-import com.dingtalk.open.app.api.stream.OpenDingTalkStreamObserver;
+import com.dingtalk.open.app.api.stream.InternalStreamObserver;
 import com.dingtalk.open.app.api.stream.ServerStreamCallbackListener;
 import com.dingtalk.open.app.stream.network.api.Context;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
 import com.dingtalk.open.app.stream.protocol.ContentType;
-import com.dingtalk.open.app.stream.protocol.callback.CallbackResponsePayload;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 /**
  * @author feiyin
@@ -65,23 +62,7 @@ public class CallbackCommandExecutor implements CommandExecutor {
             if (descriptor.getCallbackType() == CallbackType.UNARY) {
                 context.streamReply(descriptor.getMethod().unaryCall(parameter), true);
             } else if (descriptor.getCallbackType() == CallbackType.SERVER_STREAM) {
-                final Executor executor = context.getBizExecutor() == null ? DirectExecutor.INSTANCE : context.getBizExecutor();
-                descriptor.getMethod().serverStreamCall(parameter, new OpenDingTalkStreamObserver<CallbackResponsePayload>() {
-                    @Override
-                    public void onNext(CallbackResponsePayload callbackResponsePayload) {
-                        executor.execute(() -> context.streamReply(callbackResponsePayload, false));
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        executor.execute(() -> context.exception(t));
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        executor.execute(() -> context.streamReply(null, true));
-                    }
-                });
+                descriptor.getMethod().serverStreamCall(parameter, new InternalStreamObserver<>(context));
             }
         } catch (Exception e) {
             LOGGER.error("[DingTalk] execute callback failed, topic={}", context.getRequest().getTopic(), e);

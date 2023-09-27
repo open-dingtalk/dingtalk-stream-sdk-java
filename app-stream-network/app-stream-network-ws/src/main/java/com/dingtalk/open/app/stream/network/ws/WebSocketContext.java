@@ -37,7 +37,7 @@ public class WebSocketContext extends AbstractContext {
             return;
         }
         ProtocolResponse response = ProtocolResponse.new200Response(request, endOfStream);
-        response.setData(JSON.toJSONString(payload, SerializerFeature.WriteMapNullValue));
+        response.setData(payload == null ? null : JSON.toJSONString(payload, SerializerFeature.WriteMapNullValue));
         context.writeAndFlush(response).addListener(future -> {
             if (!future.isSuccess()) {
                 LOGGER.error("[DingTalk] websocket connection reply response failed, connectionId={}, messageId={}", connectionId, request.getMessageId(), future.cause());
