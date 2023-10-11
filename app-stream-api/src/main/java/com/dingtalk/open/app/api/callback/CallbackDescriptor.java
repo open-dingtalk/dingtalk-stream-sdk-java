@@ -5,6 +5,7 @@ import com.dingtalk.open.app.api.OpenDingTalkAppException;
 import com.dingtalk.open.app.api.common.AopUtils;
 import com.dingtalk.open.app.api.common.LambdaUtils;
 import com.dingtalk.open.app.api.stream.ServerStreamCallbackListener;
+import com.dingtalk.open.app.stream.network.api.ServiceType;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -17,12 +18,12 @@ import java.util.List;
 class CallbackDescriptor {
     private final CallbackMethod method;
     private final Type parameterType;
-    private final CallbackType callbackType;
+    private final ServiceType serviceType;
 
-    private CallbackDescriptor(CallbackMethod callbackMethod, Type parameterType, CallbackType callbackType) {
+    private CallbackDescriptor(CallbackMethod callbackMethod, Type parameterType, ServiceType serviceType) {
         this.method = callbackMethod;
         this.parameterType = parameterType;
-        this.callbackType = callbackType;
+        this.serviceType = serviceType;
     }
 
     public static <Req, Resp> CallbackDescriptor build(OpenDingTalkCallbackListener<Req, Resp> callback) {
@@ -48,7 +49,7 @@ class CallbackDescriptor {
         if (target == null) {
             throw new OpenDingTalkAppException(DingTalkAppError.ILLEGAL_CALLBACK);
         }
-        return new CallbackDescriptor(new UnaryMethod(callback), target, CallbackType.SERVER_STREAM);
+        return new CallbackDescriptor(new UnaryMethod(callback), target, ServiceType.UNARY);
     }
 
     public static <Req, Resp> CallbackDescriptor build(ServerStreamCallbackListener<Req, Resp> callback) {
@@ -74,19 +75,18 @@ class CallbackDescriptor {
         if (target == null) {
             throw new OpenDingTalkAppException(DingTalkAppError.ILLEGAL_CALLBACK);
         }
-        return new CallbackDescriptor(new ServerStreamCallMethod(callback), target, CallbackType.SERVER_STREAM);
+        return new CallbackDescriptor(new ServerStreamCallMethod(callback), target, ServiceType.STREAM_RESPONSE);
     }
 
     public Type getParameterType() {
         return this.parameterType;
     }
 
-
     public CallbackMethod getMethod() {
         return this.method;
     }
 
-    public CallbackType getCallbackType() {
-        return callbackType;
+    public ServiceType getServiceType() {
+        return this.serviceType;
     }
 }

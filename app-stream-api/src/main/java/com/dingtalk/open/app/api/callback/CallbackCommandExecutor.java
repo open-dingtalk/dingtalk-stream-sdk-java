@@ -8,6 +8,7 @@ import com.dingtalk.open.app.api.protocol.MessageConverterMapping;
 import com.dingtalk.open.app.api.stream.InternalStreamObserver;
 import com.dingtalk.open.app.api.stream.ServerStreamCallbackListener;
 import com.dingtalk.open.app.stream.network.api.Context;
+import com.dingtalk.open.app.stream.network.api.ServiceType;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
 import com.dingtalk.open.app.stream.protocol.ContentType;
@@ -59,9 +60,9 @@ public class CallbackCommandExecutor implements CommandExecutor {
             return;
         }
         try {
-            if (descriptor.getCallbackType() == CallbackType.UNARY) {
+            if (descriptor.getServiceType() == ServiceType.UNARY) {
                 context.streamReply(descriptor.getMethod().unaryCall(parameter), true);
-            } else if (descriptor.getCallbackType() == CallbackType.SERVER_STREAM) {
+            } else if (descriptor.getServiceType() == ServiceType.STREAM_RESPONSE) {
                 descriptor.getMethod().serverStreamCall(parameter, new InternalStreamObserver<>(context));
             }
         } catch (Exception e) {
