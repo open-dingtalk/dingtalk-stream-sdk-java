@@ -30,15 +30,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketFrame> {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(KeepAliveHandler.class);
+    private static final HashedWheelTimer TIMER;
+
+    static {
+        TIMER = new HashedWheelTimer();
+    }
+
     private final Duration timeout;
-    private final HashedWheelTimer timer;
     private Channel channel;
     private final Map<String, Timeout> timeouts;
     private final AtomicBoolean active;
 
     public KeepAliveHandler(Duration timeout) {
         this.timeout = timeout;
-        this.timer = new HashedWheelTimer();
         this.active = new AtomicBoolean(false);
         this.timeouts = new ConcurrentHashMap<>();
     }
@@ -82,7 +86,6 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
             entry.getValue().cancel();
             it.remove();
         }
-        this.timer.stop();
     }
 
     private class PingTask implements Runnable {
@@ -96,7 +99,7 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
             PingWebSocketFrame frame = new PingWebSocketFrame(byteBuf);
             channel.writeAndFlush(frame).addListener(future -> {
                 if (future.isSuccess()) {
-                    Timeout pingTimeout = timer.newTimeout(timeout -> {
+                    Timeout pingTimeout = TIMER.newTimeout(timeout -> {
                         LOGGER.warn("[DingTalk] connection ping timeout, channel is closing");
                         timeouts.remove(seq);
                         channel.close();
