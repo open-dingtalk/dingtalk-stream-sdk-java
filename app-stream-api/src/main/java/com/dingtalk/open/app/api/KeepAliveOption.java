@@ -10,7 +10,7 @@ public class KeepAliveOption {
      * 最小时间为1s
      */
     private static final Long MINI_KEEP_ALIVE_IDLE = 1000L;
-    private Long keepAliveIdle = 120 * 1000L;
+    private Long keepAliveIdle = 60 * 1000L;
 
     public static KeepAliveOption create() {
         return new KeepAliveOption();
