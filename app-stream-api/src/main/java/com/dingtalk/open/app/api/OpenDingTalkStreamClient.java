@@ -15,6 +15,7 @@ import com.dingtalk.open.app.stream.network.core.NetWorkService;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,14 +33,16 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
     private NetWorkService netWorkService;
     private OpenApiClient openApiClient;
     private Set<Subscription> subscriptions;
+    private final Map<String, String> extras;
     private final AtomicReference<Status> status;
 
-    public OpenDingTalkStreamClient(DingTalkCredential credential, CommandDispatcher dispatcher, ExecutorService executor, ClientOption option, Set<Subscription> subscriptions) {
+    public OpenDingTalkStreamClient(DingTalkCredential credential, CommandDispatcher dispatcher, ExecutorService executor, ClientOption option, Set<Subscription> subscriptions, Map<String, String> extras) {
         this.credential = credential;
         this.dispatcher = dispatcher;
         this.executor = executor;
         this.option = option;
         this.subscriptions = Collections.unmodifiableSet(subscriptions);
+        this.extras = extras;
         this.status = new AtomicReference<>(Status.INIT);
     }
 

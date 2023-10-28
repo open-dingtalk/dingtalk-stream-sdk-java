@@ -3,6 +3,7 @@ package com.dingtalk.open.app.api.open;
 
 import com.dingtalk.open.app.stream.network.core.Subscription;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,6 +26,7 @@ public class OpenConnectionRequest {
 
     private String localIp;
 
+    private Map<String, String> extras;
 
     public String getClientId() {
         return clientId;
@@ -64,6 +66,14 @@ public class OpenConnectionRequest {
 
     public void setLocalIp(String localIp) {
         this.localIp = localIp;
+    }
+
+    public Map<String, String> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(Map<String, String> extras) {
+        this.extras = extras;
     }
 }
 

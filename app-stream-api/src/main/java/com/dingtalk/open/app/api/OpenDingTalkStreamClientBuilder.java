@@ -31,6 +31,9 @@ public class OpenDingTalkStreamClientBuilder {
 
     private String openApiHost = "https://api.dingtalk.com";
 
+
+    private Map<String, String> extras;
+
     private OpenDingTalkStreamClientBuilder() {
     }
 
@@ -95,6 +98,12 @@ public class OpenDingTalkStreamClientBuilder {
     }
 
 
+    private OpenDingTalkStreamClientBuilder withClientExtras(Map<String, String> extras) {
+        this.extras = Preconditions.notNull(extras);
+        return this;
+    }
+
+
     public OpenDingTalkStreamClientBuilder preEnv() {
         return this.openApiHost("https://pre-api.dingtalk.com");
     }
@@ -107,7 +116,7 @@ public class OpenDingTalkStreamClientBuilder {
         option.setOpenApiHost(openApiHost);
         option.setKeepAliveOption(keepAliveOption);
         ExecutorService executor = ThreadUtil.newFixedExecutor(consumeThreads, "DingTalk-Consumer");
-        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions);
+        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions, extras);
     }
 
     private void subscribe(CommandType type, String topic) {
