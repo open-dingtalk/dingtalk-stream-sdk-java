@@ -98,7 +98,7 @@ public class OpenDingTalkStreamClientBuilder {
     }
 
 
-    private OpenDingTalkStreamClientBuilder withClientExtras(Map<String, String> extras) {
+    public OpenDingTalkStreamClientBuilder withClientExtras(Map<String, String> extras) {
         this.extras = Preconditions.notNull(extras);
         return this;
     }
