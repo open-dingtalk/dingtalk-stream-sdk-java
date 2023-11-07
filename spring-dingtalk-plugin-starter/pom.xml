@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.dingtalk.open</groupId>
         <artifactId>open-app-stream-client</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>spring-dingtalk-plugin-starter</artifactId>
@@ -14,7 +14,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -24,14 +23,24 @@
         </dependency>
         <dependency>
             <groupId>com.dingtalk.open</groupId>
-            <artifactId>app-stream-api</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <artifactId>dingtalk-stream</artifactId>
+            <version>1.2.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>1.5.19.RELEASE</version>
+            <version>1.5.22.RELEASE</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>1.5.22.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version>
         </dependency>
     </dependencies>
 </project>

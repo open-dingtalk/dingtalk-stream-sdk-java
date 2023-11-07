@@ -1,8 +1,6 @@
 package com.dingtalk.open;
 
-import com.alibaba.fastjson.JSON;
-import com.dingtalk.open.ai.plugin.PluginParser;
-import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
+import com.dingtalk.open.ai.plugin.annotation.Schema;
 
 /**
  * @author feiyin
@@ -10,7 +8,7 @@ import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
  */
 public class CreateResult {
 
-    @FieldDesc(desc = "是否成功", example = "true")
+    @Schema(desc = "是否成功")
     private Boolean success;
 
     public Boolean getSuccess() {
@@ -21,8 +19,4 @@ public class CreateResult {
         this.success = success;
     }
 
-
-    public static void main(String[] args) {
-      System.out.println(JSON.toJSONString(PluginParser.parseManifest(new TestAIPlugin())));
-    }
 }

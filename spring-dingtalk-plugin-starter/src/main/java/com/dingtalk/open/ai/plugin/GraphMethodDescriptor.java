@@ -1,7 +1,8 @@
 package com.dingtalk.open.ai.plugin;
 
 import com.alibaba.fastjson.JSON;
-import com.dingtalk.open.app.api.util.ReflectUtils;
+import com.dingtalk.open.ai.plugin.annotation.Graph;
+import com.dingtalk.open.app.api.graph.GraphAPIMethod;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -18,7 +19,7 @@ public class GraphMethodDescriptor {
 
     private Object target;
 
-    private GraphDispatcher dispatcher;
+    private OpenDingTalkGraphAPIDispatcher dispatcher;
 
     @SuppressWarnings("unchecked")
     public GraphMethodDescriptor() {
@@ -27,7 +28,7 @@ public class GraphMethodDescriptor {
 
     @SuppressWarnings("unchecked")
     public String invoke(String body) throws Exception {
-        return JSON.toJSONString(method.invoke(JSON.parseObject(body, parameterType), target));
+        return JSON.toJSONString(method.invoke(target, new Object[]{JSON.parseObject(body, parameterType)}));
     }
 
     public void setMethod(Method method) {
@@ -40,11 +41,11 @@ public class GraphMethodDescriptor {
 
     public void register() {
         this.parameterType = method.getParameterTypes()[0];
-        Graph graph = method.getAnnotation(Graph.class);
-        dispatcher.register(graph.method(), graph.version(), graph.resource(), this);
+        Graph graphPost = method.getAnnotation(Graph.class);
+        dispatcher.register(GraphAPIMethod.POST, graphPost.version(), graphPost.resource(), this);
     }
 
-    public void setDispatcher(GraphDispatcher dispatcher) {
+    public void setDispatcher(OpenDingTalkGraphAPIDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
 }

@@ -11,25 +11,30 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AIAbility {
+public @interface AIApi {
 
     /**
      * api能力名称
+     *
      * @return
      */
     String name();
 
     /**
      * 插件描述信息
+     *
      * @return
      */
     String description();
 
     /**
      * 提示词
+     *
      * @return
      */
-    String [] fewShots();
+    Examples examples();
 
+
+    boolean confirmParams() default true;
 
 }

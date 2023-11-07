@@ -64,7 +64,11 @@ public class WebsocketTransportConnector implements TransportConnector {
                 socketChannel.pipeline().addLast(new ProtocolFrameHandler());
                 socketChannel.pipeline().addLast(new NettyClientHandler(connection.getConnectionId(), listener));
             }
-        }).connect(connection.getEndPoint().getHost(), connection.getEndPoint().getPort());
+        }).connect(connection.getEndPoint().getHost(), connection.getEndPoint().getPort()).addListener(future1 -> {
+            if (!future1.isSuccess()) {
+                LOGGER.error("[DingTalk] failed to connect proxy host, e={}", future1.cause());
+            }
+        });
         future.get(option.getTimeout(), TimeUnit.MILLISECONDS);
         return new WebSocketSession(future.get(), connection.getConnectionId(), option.getTtl());
     }

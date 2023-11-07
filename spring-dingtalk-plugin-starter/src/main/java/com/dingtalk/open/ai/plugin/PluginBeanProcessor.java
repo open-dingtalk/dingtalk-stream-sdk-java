@@ -1,11 +1,13 @@
 package com.dingtalk.open.ai.plugin;
 
 import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
+import com.dingtalk.open.ai.plugin.annotation.Graph;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
@@ -21,15 +23,20 @@ public class PluginBeanProcessor implements BeanFactoryPostProcessor {
         for (String beanName : beanFactory.getBeanDefinitionNames()) {
             try {
                 BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+                if (beanDefinition.getBeanClassName() == null) {
+                    continue;
+                }
                 Class beanClass = ClassUtils.forName(beanDefinition.getBeanClassName(), beanFactory.getBeanClassLoader());
                 if (!beanClass.isAnnotationPresent(AIPlugin.class)) {
                     continue;
                 }
                 BeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(AIPluginReporter.class)
                         .addPropertyReference("container", "pluginContainer")
-                        .setInitMethodName("report")
+                        .setInitMethodName("register")
                         .addPropertyValue("targetClass", beanClass)
                         .getBeanDefinition();
+
+                ((DefaultListableBeanFactory)beanFactory).registerBeanDefinition("reporter$" + beanName, definition);
 
                 for (Method method : beanClass.getMethods()) {
                     if (method.isAnnotationPresent(Graph.class)) {
@@ -39,10 +46,9 @@ public class PluginBeanProcessor implements BeanFactoryPostProcessor {
                                 .addPropertyReference("dispatcher","graphDispatcher")
                                 .setInitMethodName("register")
                                 .getBeanDefinition();
-                        beanFactory.registerSingleton("reporter$" + beanName + method.getName(), methodBean);
+                        ((DefaultListableBeanFactory) beanFactory).registerBeanDefinition("reporter$" + beanName + method.getName(), methodBean);
                     }
                 }
-                beanFactory.registerSingleton("reporter$" + beanName, definition);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -1,4 +1,4 @@
-package com.dingtalk.open.ai.plugin;
+package com.dingtalk.open.ai.plugin.annotation;
 
 import com.dingtalk.open.app.api.graph.GraphAPIMethod;
 
@@ -9,15 +9,16 @@ import java.lang.annotation.Target;
 
 /**
  * @author feiyin
- * @date 2023/11/7
+ * @date 2023/11/9
  */
-@Target(ElementType.METHOD)
+
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Graph {
+public @interface GraphGrounding {
 
-    String version() default "1.0";
+    GraphAPIMethod method();
 
-    GraphAPIMethod method() default GraphAPIMethod.POST;
+    String path();
 
-    String resource();
+
 }
