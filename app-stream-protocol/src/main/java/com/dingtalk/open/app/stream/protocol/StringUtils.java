@@ -16,4 +16,8 @@ public class StringUtils {
         }
         return true;
     }
+
+    public static boolean isEmpty(String cs) {
+        return cs == null || cs.isEmpty();
+    }
 }

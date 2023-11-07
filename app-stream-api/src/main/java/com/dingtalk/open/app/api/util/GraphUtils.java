@@ -22,8 +22,13 @@ public class GraphUtils {
      * @return
      */
     public static GraphAPIResponse successJson(Object result) {
+        return success(JSON.toJSONString(result));
+    }
+
+
+    public static GraphAPIResponse success(String result) {
         GraphAPIResponse response = baseResponse(StatusLine.OK);
-        response.setBody(JSON.toJSONString(result));
+        response.setBody(result);
         return response;
     }
 

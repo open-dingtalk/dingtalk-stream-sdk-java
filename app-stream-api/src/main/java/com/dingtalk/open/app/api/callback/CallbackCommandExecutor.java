@@ -28,7 +28,9 @@ public class CallbackCommandExecutor implements CommandExecutor {
     }
 
     public void register(String service, OpenDingTalkCallbackListener<?, ?> callback) {
-        callbackDescriptors.put(service, CallbackDescriptor.build(callback));
+        if (callbackDescriptors.putIfAbsent(service, CallbackDescriptor.build(callback)) != null) {
+            throw new OpenDingTalkAppException(DingTalkAppError.REFLECTION_ERROR, service);
+        }
     }
 
     @Override

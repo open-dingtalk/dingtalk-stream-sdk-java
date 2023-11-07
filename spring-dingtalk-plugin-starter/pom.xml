@@ -3,15 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.dingtalk.open</groupId>
-        <artifactId>app-stream-network</artifactId>
+        <artifactId>open-app-stream-client</artifactId>
         <version>1.2.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>app-stream-network-core</artifactId>
+    <artifactId>spring-dingtalk-plugin-starter</artifactId>
     <packaging>jar</packaging>
-
-    <name>app-stream-network-core</name>
+    <name>spring-dingtalk-plugin-starter</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,12 +19,19 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.dingtalk.open</groupId>
-            <artifactId>app-stream-network-api</artifactId>
-            <version>${parent.version}</version>
+            <artifactId>app-stream-api</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>1.5.19.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

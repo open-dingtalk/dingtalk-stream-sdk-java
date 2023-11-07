@@ -28,6 +28,17 @@ public enum DingTalkAppError {
     ILLEGAL_CALLBACK(400, "10006", "illegal callback implementation"),
 
 
+    ILLEGAL_GRAPH_REQUEST_LINE(400, "10007", "illegal graph request line"),
+
+
+    ILLEGAL_GENERIC_LISTENER(400, "10008", "illegal generic listener"),
+
+
+    DUPLICATE_DEFINED_GRAPH(400, "10009", "duplicated defined graph api"),
+
+
+    DUPLICATE_DEFINED_CALLBACK(400, "10010", "duplicated callback registered"),
+
     REFLECTION_ERROR(500, "10008", " reflection error"),
 
 

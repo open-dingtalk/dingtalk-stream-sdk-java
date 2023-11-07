@@ -1,6 +1,8 @@
 package com.dingtalk.open.app.api;
 
 import com.dingtalk.open.app.api.command.CommandDispatcher;
+import com.dingtalk.open.app.api.graph.GraphAPIMethod;
+import com.dingtalk.open.app.api.graph.OpenDingTalkGraphListener;
 import com.dingtalk.open.app.api.util.ThreadUtil;
 import com.dingtalk.open.app.api.callback.CallbackCommandExecutor;
 import com.dingtalk.open.app.api.callback.OpenDingTalkCallbackListener;
@@ -20,11 +22,10 @@ import java.util.concurrent.ExecutorService;
 public class OpenDingTalkStreamClientBuilder {
     private int consumeThreads = 16;
     private final Map<CommandType, CommandExecutor> commands = new HashMap<>();
-
     private final Set<Subscription> subscriptions = new HashSet<>();
     private DingTalkCredential credential;
     private int maxConnectionCount = 1;
-    private int connectionTimeToLive = 6 * 60 * 60 * 1000;
+    private final int connectionTimeToLive = 6 * 60 * 60 * 1000;
     private long connectTimeout = 3 * 1000L;
 
     private KeepAliveOption keepAliveOption = new KeepAliveOption();
@@ -64,7 +65,6 @@ public class OpenDingTalkStreamClientBuilder {
         subscribe(CommandType.CALLBACK, topic);
         return this;
     }
-
 
     public OpenDingTalkStreamClientBuilder maxConnectionCounts(int maxConnectionCount) {
         this.maxConnectionCount = Preconditions.checkPositive(maxConnectionCount);

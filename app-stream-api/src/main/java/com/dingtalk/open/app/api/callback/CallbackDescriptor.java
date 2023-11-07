@@ -4,6 +4,7 @@ import com.dingtalk.open.app.api.DingTalkAppError;
 import com.dingtalk.open.app.api.OpenDingTalkAppException;
 import com.dingtalk.open.app.api.common.AopUtils;
 import com.dingtalk.open.app.api.common.LambdaUtils;
+import com.dingtalk.open.app.api.util.ReflectUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -23,25 +24,7 @@ class CallbackDescriptor {
     }
 
     public static <Req, Resp> CallbackDescriptor build(OpenDingTalkCallbackListener<Req, Resp> callback) {
-        Type target = null;
-        if (LambdaUtils.isLambda(callback)) {
-            List<Type> types = LambdaUtils.getLambdaParameterTypes(callback);
-            if (types == null || types.size() != 1) {
-                throw new OpenDingTalkAppException(DingTalkAppError.LAMBDA_PARSE_FAILED);
-            }
-            target = types.get(0);
-        } else {
-            Type[] types = AopUtils.getTargetClass(callback).getGenericInterfaces();
-            for (Type type : types) {
-                if (type instanceof ParameterizedType) {
-                    Class<?> rawType = (Class<?>) ((ParameterizedType) type).getRawType();
-                    if (OpenDingTalkCallbackListener.class.isAssignableFrom(rawType)) {
-                        target = ((ParameterizedType) type).getActualTypeArguments()[0];
-                        break;
-                    }
-                }
-            }
-        }
+        Type target = ReflectUtils.getGenericParameterType(callback,0);
         if (target == null) {
             throw new OpenDingTalkAppException(DingTalkAppError.ILLEGAL_CALLBACK);
         }
