@@ -30,8 +30,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>1.5.19.RELEASE</version>
+            <version>1.5.22.RELEASE</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>1.5.22.RELEASE</version>
         </dependency>
     </dependencies>
 </project>

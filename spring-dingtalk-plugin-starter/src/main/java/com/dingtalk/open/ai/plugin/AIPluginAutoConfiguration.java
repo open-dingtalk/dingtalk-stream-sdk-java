@@ -1,6 +1,6 @@
 package com.dingtalk.open.ai.plugin;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,16 +10,12 @@ import org.springframework.context.annotation.Configuration;
  * @date 2023/11/7
  */
 @Configuration
-@EnableConfigurationProperties(AIProperties.class)
+@EnableConfigurationProperties(PluginProperties.class)
+@ConditionalOnProperty(prefix = "spring.dingtalk.plugin", name = "enabled" , havingValue = "true", matchIfMissing = true)
 public class AIPluginAutoConfiguration {
 
-
-    @Autowired
-    private AIProperties properties;
-
-
     @Bean(name = "pluginContainer")
-    public PluginContainer configureContainer() {
+    public PluginContainer configureContainer(PluginProperties properties) {
         return new PluginContainer(properties.getClientId(), properties.getClientSecret());
     }
 

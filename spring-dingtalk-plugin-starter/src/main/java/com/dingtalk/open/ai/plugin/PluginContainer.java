@@ -6,6 +6,7 @@ import com.dingtalk.open.ai.plugin.api.ReportOpenApiService;
 import com.dingtalk.open.ai.plugin.api.ReportPluginRequest;
 import com.dingtalk.open.app.api.OpenDingTalkStreamClientBuilder;
 import com.dingtalk.open.app.api.callback.DingTalkStreamTopics;
+import com.dingtalk.open.app.api.security.AuthClientCredential;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.proxy.Dispatcher;
 import org.springframework.context.ApplicationListener;
@@ -61,7 +62,13 @@ public class PluginContainer implements ApplicationListener<ContextRefreshedEven
             }
         });
 
-        OpenDingTalkStreamClientBuilder.custom().preEnv()
-                .registerCallbackListener(DingTalkStreamTopics.GRAPH_API_TOPIC, dispatcher);
+        try {
+            OpenDingTalkStreamClientBuilder.custom().preEnv()
+                    .credential(new AuthClientCredential(clientId, clientSecret))
+                    .registerCallbackListener(DingTalkStreamTopics.GRAPH_API_TOPIC, dispatcher).build()
+                    .start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
