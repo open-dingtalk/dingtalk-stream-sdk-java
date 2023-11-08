@@ -1,5 +1,7 @@
 package com.dingtalk.open.ai.plugin;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson2.JSONObject;
 import com.dingtalk.open.ai.plugin.annotation.AIAbility;
 import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
@@ -9,6 +11,7 @@ import com.dingtalk.open.app.stream.protocol.StringUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,7 +20,7 @@ import java.util.UUID;
  */
 public class PluginParser {
 
-    public static Manifest parseManifest(Class pluginClass) {
+    public static String parseManifest(Class pluginClass) {
         if (!pluginClass.isAnnotationPresent(AIPlugin.class)) {
             throw new RuntimeException("illegal ai plugin service");
         }
@@ -26,7 +29,7 @@ public class PluginParser {
         AIPlugin aiPlugin = (AIPlugin) pluginClass.getAnnotation(AIPlugin.class);
         manifest.setSchemaVersion("1.0");
         manifest.setNameForModel(aiPlugin.name());
-        manifest.setNameForModel(aiPlugin.name());
+        manifest.setNameForHuman(aiPlugin.name());
         manifest.setDescriptionForHuman(aiPlugin.description());
         manifest.setDescriptionForModel(aiPlugin.description());
         for (Method method : pluginClass.getDeclaredMethods()) {
@@ -42,6 +45,7 @@ public class PluginParser {
             Ability ability = new Ability();
             AbilityForModel abilityForModel = new AbilityForModel();
             AbilityForRuntime abilityForRuntime = new AbilityForRuntime();
+            abilityForModel.setDescription(aiAbility.description());
             abilityForModel.setOutputSchema(pojoToJsonSchema(method.getReturnType()));
             abilityForModel.setInputSchema(pojoToJsonSchema(method.getParameterTypes()[0]));
 
@@ -54,18 +58,19 @@ public class PluginParser {
             ability.setAbilityForRuntime(abilityForRuntime);
             manifest.getAbilities().put(UUID.randomUUID().toString(), ability);
         }
-        return manifest;
+        return JSON.toJSONString(manifest, SerializerFeature.DisableCircularReferenceDetect);
     }
 
 
-    private static String pojoToJsonSchema(Class pojoClass) {
+    private static Object pojoToJsonSchema(Class pojoClass) {
         if (pojoClass == null) {
             throw new RuntimeException();
         }
 
-        JSONObject schema = new JSONObject();
+        Map<String, Parameter> schema = new HashMap<>();
+        int index = 0;
         for (Field declaredField : pojoClass.getDeclaredFields()) {
-            JSONObject desc = new JSONObject();
+            Parameter desc = new Parameter();
             FieldDesc fieldDesc = declaredField.getAnnotation(FieldDesc.class);
             if (fieldDesc == null) {
                 continue;
@@ -74,20 +79,19 @@ public class PluginParser {
             String type = parse(declaredField.getType());
             Boolean required = fieldDesc.required();
             String example = fieldDesc.example();
-            ;
-            String description = fieldDesc.desc();
-            desc.put("type", type);
-            desc.put("required", required);
-            desc.put("example", example);
-            desc.put("description", fieldDesc.desc());
+            desc.setType(type);
+            desc.setRequired(required);
+            desc.setExample(example);
+            desc.setDescription(fieldDesc.desc());
+            desc.setIndex(index++);
             if (fieldDesc.grounding() != null && fieldDesc.grounding() != GroundingTag.NONE) {
                 JSONObject grounding = new JSONObject();
                 grounding.put("url", fieldDesc.grounding());
-                desc.put("x-grounding", grounding);
+                desc.setGrounding(grounding);
             }
             schema.put(name, desc);
         }
-        return schema.toJSONString();
+        return schema;
     }
 
 

@@ -8,25 +8,36 @@ import com.alibaba.fastjson2.annotation.JSONField;
  */
 public class AbilityForModel {
 
+
+    private String description;
+
     @JSONField(name = "input_param")
-    private String inputSchema;
+    private Object inputSchema;
 
     @JSONField(name = "output_param")
-    private String outputSchema;
+    private Object outputSchema;
 
-    public String getInputSchema() {
+    public Object getInputSchema() {
         return inputSchema;
     }
 
-    public void setInputSchema(String inputSchema) {
+    public void setInputSchema(Object inputSchema) {
         this.inputSchema = inputSchema;
     }
 
-    public String getOutputSchema() {
+    public Object getOutputSchema() {
         return outputSchema;
     }
 
-    public void setOutputSchema(String outputSchema) {
+    public void setOutputSchema(Object outputSchema) {
         this.outputSchema = outputSchema;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

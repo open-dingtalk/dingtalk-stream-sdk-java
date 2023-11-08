@@ -1,6 +1,7 @@
 package com.dingtalk.open.ai.plugin;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
 import com.dingtalk.open.ai.plugin.api.ReportOpenApiService;
 import com.dingtalk.open.ai.plugin.api.ReportPluginRequest;
@@ -54,7 +55,7 @@ public class PluginContainer implements ApplicationListener<ContextRefreshedEven
             request.setDescription(aiPlugin.description());
             request.setName(aiPlugin.name());
             request.setVersion(aiPlugin.version());
-            request.setManifest(JSON.toJSONString(PluginParser.parseManifest(aiPluginReporter.getTargetClass())));
+            request.setManifest(PluginParser.parseManifest(aiPluginReporter.getTargetClass()));
             try {
                 ReportOpenApiService.report(request);
             } catch (Exception e) {
