@@ -35,7 +35,7 @@ public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIReq
                 //GraphAPI不存在
                 return GraphUtils.failed(StatusLine.NOT_FOUND);
             }
-            return GraphUtils.successJson(descriptor.invoke(request.getBody()));
+            return GraphUtils.success(descriptor.invoke(request.getBody()));
         } catch (Exception e) {
             LOGGER.error("[DingTalk] unexpected execute exception occurs when invoke graph api", e);
             return GraphUtils.failed(StatusLine.INTERNAL_ERROR);

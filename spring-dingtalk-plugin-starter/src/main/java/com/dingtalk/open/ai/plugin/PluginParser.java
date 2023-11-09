@@ -84,10 +84,16 @@ public class PluginParser {
             desc.setExample(example);
             desc.setDescription(fieldDesc.desc());
             desc.setIndex(index++);
-            if (fieldDesc.grounding() != null && fieldDesc.grounding() != GroundingTag.NONE) {
-                JSONObject grounding = new JSONObject();
-                grounding.put("url", fieldDesc.grounding());
-                desc.setGrounding(grounding);
+            //system grounding优先级最高
+            if (fieldDesc.systemGrounding() != null && fieldDesc.systemGrounding() != GroundingTag.NONE) {
+                GroundingOption option = new GroundingOption();
+                option.setUrl(fieldDesc.systemGrounding().name());
+                desc.setGrounding(option);
+            } else if (fieldDesc.graphGrounding() != null && !StringUtils.isEmpty(fieldDesc.graphGrounding().path())) {
+                GroundingOption option = new GroundingOption();
+                option.setUrl(fieldDesc.graphGrounding().path());
+                option.setMethod(fieldDesc.graphGrounding().method());
+                desc.setGrounding(option);
             }
             schema.put(name, desc);
         }

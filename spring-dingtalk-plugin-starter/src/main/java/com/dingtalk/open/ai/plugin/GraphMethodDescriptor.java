@@ -27,7 +27,7 @@ public class GraphMethodDescriptor {
 
     @SuppressWarnings("unchecked")
     public String invoke(String body) throws Exception {
-        return JSON.toJSONString(method.invoke(JSON.parseObject(body, parameterType), target));
+        return JSON.toJSONString(method.invoke(target, new Object[]{JSON.parseObject(body, parameterType)}));
     }
 
     public void setMethod(Method method) {

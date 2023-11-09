@@ -1,6 +1,7 @@
 package com.dingtalk.open.ai.plugin.annotation;
 
 import com.dingtalk.open.ai.plugin.GroundingTag;
+import com.dingtalk.open.app.api.graph.GraphAPIMethod;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,13 +34,24 @@ public @interface FieldDesc {
     String desc();
 
     /**
-     * 字段grounding
+     * 系统grounding
      *
      * @return
      */
-    GroundingTag grounding() default GroundingTag.NONE;
+    GroundingTag systemGrounding() default GroundingTag.NONE;
 
+    /**
+     * graph接口grounding
+     *
+     * @return
+     */
+    GraphGrounding graphGrounding() default @GraphGrounding(path = "", method = GraphAPIMethod.GET);
 
+    /**
+     * 是否是必须字段
+     *
+     * @return
+     */
     boolean required() default true;
 
 }
