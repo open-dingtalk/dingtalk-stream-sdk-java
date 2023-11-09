@@ -6,7 +6,7 @@ import com.dingtalk.open.app.api.graph.GraphAPIMethod;
  * @author feiyin
  * @date 2023/11/9
  */
-public class GroundingOption {
+public class GroundingOperation {
 
     private String url;
 

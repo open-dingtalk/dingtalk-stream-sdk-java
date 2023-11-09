@@ -15,6 +15,24 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Graph {
 
+    /**
+     * graph接口名称
+     *
+     * @return
+     */
+    String name() default "";
+
+    /**
+     * 插件描述信息
+     *
+     * @return
+     */
+    String description() default "";
+    /**
+     * 版本信息
+     *
+     * @return
+     */
     String version() default "1.0";
 
     GraphAPIMethod method() default GraphAPIMethod.POST;

@@ -12,10 +12,10 @@ public class AoneCreateReq {
     @FieldDesc(desc = "aone项目id", example = "12321")
     private Long akProjectId;
 
-    @FieldDesc(desc = "创建人", example = "飞隐", grounding = GroundingTag.SYSTEM_UNION_GROUNDING)
+    @FieldDesc(desc = "创建人", example = "飞隐", systemGrounding = GroundingTag.SYSTEM_UNION_GROUNDING)
     private String author;
 
-    @FieldDesc(desc = "创建人", example = "飞隐", grounding = GroundingTag.SYSTEM_UNION_GROUNDING)
+    @FieldDesc(desc = "创建人", example = "飞隐", systemGrounding = GroundingTag.SYSTEM_UNION_GROUNDING)
     private String assignTo;
 
     @FieldDesc(desc = "创建人", example = "飞隐")

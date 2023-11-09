@@ -24,7 +24,7 @@ public @interface FieldDesc {
      *
      * @return
      */
-    String example();
+    String example() default "";
 
     /**
      * 描述信息
