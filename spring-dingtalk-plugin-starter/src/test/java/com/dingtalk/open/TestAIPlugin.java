@@ -1,8 +1,9 @@
 package com.dingtalk.open;
 
 import com.alibaba.fastjson.JSON;
-import com.dingtalk.open.ai.plugin.Graph;
-import com.dingtalk.open.ai.plugin.annotation.AIAbility;
+import com.dingtalk.open.ai.plugin.annotation.Examples;
+import com.dingtalk.open.ai.plugin.annotation.Graph;
+import com.dingtalk.open.ai.plugin.annotation.AIApi;
 import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
 import com.dingtalk.open.ai.plugin.parser.PluginSchemaParser;
 
@@ -13,15 +14,18 @@ import com.dingtalk.open.ai.plugin.parser.PluginSchemaParser;
 @AIPlugin(name = "aone测试插件", description = "aone测试插件")
 public class TestAIPlugin {
 
-
-    @Graph(name ="问答小助手" ,resource = "/aone/get", description = "")
-    @AIAbility(name = "创建aone", description = "创建aone", fewShots = {})
+    @Graph(resource = "/aone/create/issue")
+    @AIApi(
+            name = "createAone",
+            description = "创建aone",
+            examples = @Examples(file= "fewshots.json")
+    )
     public CreateResult createAone(AoneCreateReq req) {
         return null;
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println(JSON.toJSONString(PluginSchemaParser.parseManifest(TestAIPlugin.class)));
     }
 

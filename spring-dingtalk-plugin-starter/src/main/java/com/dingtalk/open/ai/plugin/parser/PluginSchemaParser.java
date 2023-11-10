@@ -1,11 +1,10 @@
 package com.dingtalk.open.ai.plugin.parser;
 
-import com.dingtalk.open.ai.plugin.Graph;
+import com.dingtalk.open.ai.plugin.FileExampleReader;
 import com.dingtalk.open.ai.plugin.GroundingOperation;
 import com.dingtalk.open.ai.plugin.GroundingTag;
-import com.dingtalk.open.ai.plugin.annotation.AIAbility;
-import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
-import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
+import com.dingtalk.open.ai.plugin.TextExampleReader;
+import com.dingtalk.open.ai.plugin.annotation.*;
 import com.dingtalk.open.ai.plugin.schema.*;
 import com.dingtalk.open.app.api.graph.GraphAPIMethod;
 import com.dingtalk.open.app.stream.protocol.StringUtils;
@@ -20,7 +19,7 @@ import java.util.HashMap;
  */
 public class PluginSchemaParser {
 
-    public static OpenApi parseManifest(Class pluginClass) {
+    public static OpenApi parseManifest(Class pluginClass) throws Exception {
         if (!pluginClass.isAnnotationPresent(AIPlugin.class)) {
             throw new RuntimeException("illegal ai plugin service");
         }
@@ -37,18 +36,18 @@ public class PluginSchemaParser {
         openApi.setInfo(info);
         openApi.setPaths(new HashMap<>());
         for (Method method : pluginClass.getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(AIAbility.class)) {
+            if (!method.isAnnotationPresent(AIApi.class)) {
                 continue;
             }
-            AIAbility aiAbility = method.getAnnotation(AIAbility.class);
+            AIApi aiApi = method.getAnnotation(AIApi.class);
             if (!method.isAnnotationPresent(Graph.class)) {
                 throw new RuntimeException("graph annotation is not present");
             }
             Graph graph = method.getAnnotation(Graph.class);
             PathItem pathItem = new PathItem();
             Operation operation = new Operation();
-            operation.setOperationId(aiAbility.name());
-            operation.setSummary(aiAbility.description());
+            operation.setOperationId(aiApi.name());
+            operation.setSummary(aiApi.description());
             operation.setExamples(new Example[]{});
             RequestBody requestBody = new RequestBody();
             requestBody.setRequired(true);
@@ -69,6 +68,14 @@ public class PluginSchemaParser {
             } else {
                 pathItem.setPost(operation);
             }
+
+            Examples examples = aiApi.examples();
+            if (examples.text() != null && examples.text().length != 0) {
+                operation.setExamples(new TextExampleReader(examples.text()).read());
+            } else if (StringUtils.isNotEmpty(examples.file())) {
+                operation.setExamples(new FileExampleReader(examples.file()).read());
+            }
+
             openApi.getPaths().put("/v" + graph.version() + graph.resource(), pathItem);
         }
         return openApi;

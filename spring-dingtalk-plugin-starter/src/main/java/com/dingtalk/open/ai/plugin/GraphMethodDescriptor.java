@@ -1,7 +1,7 @@
 package com.dingtalk.open.ai.plugin;
 
 import com.alibaba.fastjson.JSON;
-import com.dingtalk.open.app.api.util.ReflectUtils;
+import com.dingtalk.open.ai.plugin.annotation.Graph;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -40,8 +40,8 @@ public class GraphMethodDescriptor {
 
     public void register() {
         this.parameterType = method.getParameterTypes()[0];
-        Graph graph = method.getAnnotation(Graph.class);
-        dispatcher.register(graph.method(), graph.version(), graph.resource(), this);
+        Graph graphPost = method.getAnnotation(Graph.class);
+        dispatcher.register(graphPost.method(), graphPost.version(), graphPost.resource(), this);
     }
 
     public void setDispatcher(GraphDispatcher dispatcher) {

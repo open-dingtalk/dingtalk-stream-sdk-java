@@ -1,0 +1,13 @@
+[
+  {
+    "input" : "",
+    "output" : {
+      "abilityKey" : "createAone",
+      "params" : {
+        "author": "飞隐",
+        "assignTo" : "薛晨",
+        "expectTime" : "八点"
+      }
+    }
+  }
+]

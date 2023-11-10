@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  description: aone测试插件
+  title: aone测试插件
+  version: 1.0.0
+paths:
+  /v1.0/aone/get:
+    post:
+      summary: 创建aone
+      examples:
+      operationId: 创建aone
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: true
+              properties:
+                author:
+                  description: 创建人
+                  example: 飞隐
+                  index: 1
+                  required: true
+                  type: string
+                  x-grounding:
+                    url: SYSTEM_UNION_GROUNDING
+                subject:
+                  description: 创建人
+                  example: 飞隐
+                  index: 3
+                  required: true
+                  type: string
+                akProjectId:
+                  description: aone项目id
+                  example: '12321'
+                  index: 0
+                  required: true
+                  type: integer
+                assignTo:
+                  description: 创建人
+                  example: 飞隐
+                  index: 2
+                  required: true
+                  type: string
+                  x-grounding:
+                    url: SYSTEM_UNION_GROUNDING
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    description: 是否成功
+                    example: ''
+                    index: 0
+                    required: true
+                    type: boolean
+servers:
+  - 'https://graph.dingtalk.com'

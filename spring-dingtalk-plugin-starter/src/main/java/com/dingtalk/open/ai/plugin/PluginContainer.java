@@ -44,8 +44,8 @@ public class PluginContainer implements ApplicationListener<ContextRefreshedEven
         reporters.forEach(aiPluginReporter -> {
             ReportPluginRequest request = new ReportPluginRequest();
             request.setClientId(clientId);
-            request.setManifest(JSON.toJSONString(PluginSchemaParser.parseManifest(aiPluginReporter.getTargetClass())));
             try {
+                request.setManifest(JSON.toJSONString(PluginSchemaParser.parseManifest(aiPluginReporter.getTargetClass())));
                 ReportOpenApiService.report(request);
             } catch (Exception e) {
                 throw new RuntimeException(e);

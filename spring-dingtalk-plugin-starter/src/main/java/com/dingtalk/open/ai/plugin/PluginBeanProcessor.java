@@ -1,6 +1,7 @@
 package com.dingtalk.open.ai.plugin;
 
 import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
+import com.dingtalk.open.ai.plugin.annotation.Graph;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;

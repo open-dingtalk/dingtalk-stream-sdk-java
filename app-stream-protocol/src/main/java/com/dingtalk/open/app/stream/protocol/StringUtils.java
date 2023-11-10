@@ -20,4 +20,8 @@ public class StringUtils {
     public static boolean isEmpty(String cs) {
         return cs == null || cs.isEmpty();
     }
+
+    public static boolean isNotEmpty(String cs) {
+        return !isEmpty(cs);
+    }
 }

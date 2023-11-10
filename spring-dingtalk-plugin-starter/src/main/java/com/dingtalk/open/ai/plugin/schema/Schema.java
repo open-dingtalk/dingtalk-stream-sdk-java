@@ -28,4 +28,6 @@ public class Schema {
 
     private Map<String, Schema> properties;
 
+    private Schema items;
+
 }
