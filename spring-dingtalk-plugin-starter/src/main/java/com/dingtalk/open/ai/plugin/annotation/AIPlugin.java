@@ -14,8 +14,18 @@ import java.lang.annotation.*;
 @Inherited
 public @interface AIPlugin {
 
+    /**
+     * AI插件名称
+     *
+     * @return
+     */
     String name();
 
+    /**
+     * AI插件描述信息
+     *
+     * @return
+     */
     String description();
 
     /**

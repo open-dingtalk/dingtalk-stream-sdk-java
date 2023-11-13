@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface FieldDesc {
+public @interface AIField {
 
 
     String name() default "";
@@ -41,7 +41,7 @@ public @interface FieldDesc {
     GroundingTag systemGrounding() default GroundingTag.NONE;
 
     /**
-     * graph接口grounding
+     * 接口grounding
      *
      * @return
      */

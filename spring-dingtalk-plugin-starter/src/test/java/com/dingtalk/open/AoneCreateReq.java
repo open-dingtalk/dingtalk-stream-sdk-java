@@ -1,7 +1,7 @@
 package com.dingtalk.open;
 
 import com.dingtalk.open.ai.plugin.GroundingTag;
-import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
+import com.dingtalk.open.ai.plugin.annotation.AIField;
 
 /**
  * @author feiyin
@@ -9,16 +9,16 @@ import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
  */
 public class AoneCreateReq {
 
-    @FieldDesc(desc = "aone项目id", example = "12321")
+    @AIField(desc = "aone项目id", example = "12321")
     private Long akProjectId;
 
-    @FieldDesc(desc = "创建人", example = "飞隐", systemGrounding = GroundingTag.SYSTEM_UNION_GROUNDING)
+    @AIField(desc = "创建人", example = "飞隐", systemGrounding = GroundingTag.SYSTEM_UNION_GROUNDING)
     private String author;
 
-    @FieldDesc(desc = "创建人", example = "飞隐", systemGrounding = GroundingTag.SYSTEM_UNION_GROUNDING)
+    @AIField(desc = "创建人", example = "飞隐", systemGrounding = GroundingTag.SYSTEM_UNION_GROUNDING)
     private String assignTo;
 
-    @FieldDesc(desc = "创建人", example = "飞隐")
+    @AIField(desc = "创建人", example = "飞隐")
     private String subject;
 
     public Long getAkProjectId() {

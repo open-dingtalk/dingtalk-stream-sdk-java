@@ -1,6 +1,6 @@
 package com.dingtalk.open;
 
-import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
+import com.dingtalk.open.ai.plugin.annotation.AIField;
 
 /**
  * @author feiyin
@@ -8,7 +8,7 @@ import com.dingtalk.open.ai.plugin.annotation.FieldDesc;
  */
 public class CreateResult {
 
-    @FieldDesc(desc = "是否成功")
+    @AIField(desc = "是否成功")
     private Boolean success;
 
     public Boolean getSuccess() {

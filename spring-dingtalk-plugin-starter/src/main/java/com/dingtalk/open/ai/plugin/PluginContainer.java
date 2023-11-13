@@ -3,7 +3,7 @@ package com.dingtalk.open.ai.plugin;
 import com.alibaba.fastjson.JSON;
 import com.dingtalk.open.ai.plugin.api.ReportOpenApiService;
 import com.dingtalk.open.ai.plugin.api.ReportPluginRequest;
-import com.dingtalk.open.ai.plugin.parser.PluginSchemaParser;
+import com.dingtalk.open.ai.plugin.schema.PluginSchemaParser;
 import com.dingtalk.open.app.api.OpenDingTalkStreamClientBuilder;
 import com.dingtalk.open.app.api.callback.DingTalkStreamTopics;
 import com.dingtalk.open.app.api.security.AuthClientCredential;
@@ -45,7 +45,7 @@ public class PluginContainer implements ApplicationListener<ContextRefreshedEven
             ReportPluginRequest request = new ReportPluginRequest();
             request.setClientId(clientId);
             try {
-                request.setManifest(JSON.toJSONString(PluginSchemaParser.parseManifest(aiPluginReporter.getTargetClass())));
+                request.setManifest(JSON.toJSONString(PluginSchemaParser.parseSchema(aiPluginReporter.getTargetClass())));
                 ReportOpenApiService.report(request);
             } catch (Exception e) {
                 throw new RuntimeException(e);

@@ -9,7 +9,7 @@ import java.util.Map;
  * @date 2023/11/9
  */
 @Data
-public class OpenApi {
+public class AIPluginSchema {
 
     /**
      * api名称

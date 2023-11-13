@@ -5,7 +5,7 @@ import com.dingtalk.open.ai.plugin.annotation.Examples;
 import com.dingtalk.open.ai.plugin.annotation.Graph;
 import com.dingtalk.open.ai.plugin.annotation.AIApi;
 import com.dingtalk.open.ai.plugin.annotation.AIPlugin;
-import com.dingtalk.open.ai.plugin.parser.PluginSchemaParser;
+import com.dingtalk.open.ai.plugin.schema.PluginSchemaParser;
 
 /**
  * @author feiyin
@@ -15,18 +15,13 @@ import com.dingtalk.open.ai.plugin.parser.PluginSchemaParser;
 public class TestAIPlugin {
 
     @Graph(resource = "/aone/create/issue")
-    @AIApi(
-            name = "createAone",
-            description = "创建aone",
-            examples = @Examples(file= "fewshots.json")
-    )
+    @AIApi(name = "createAone", description = "创建aone", examples = @Examples(file = "fewshots.json"))
     public CreateResult createAone(AoneCreateReq req) {
         return null;
     }
 
 
     public static void main(String[] args) throws Exception {
-        System.out.println(JSON.toJSONString(PluginSchemaParser.parseManifest(TestAIPlugin.class)));
+        System.out.println(JSON.toJSONString(PluginSchemaParser.parseSchema(TestAIPlugin.class)));
     }
-
 }
