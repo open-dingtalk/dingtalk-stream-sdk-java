@@ -9,8 +9,6 @@ import lombok.Data;
 @Data
 public class PathItem {
 
-    private Operation get;
-
     private Operation post;
 
 }

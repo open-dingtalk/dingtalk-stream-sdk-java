@@ -21,12 +21,12 @@ import java.util.HashMap;
  */
 public class PluginSchemaParser {
 
-    public static AIPluginSchema parseSchema(Class<?> pluginClass) {
+    public static OpenAPI parseSchema(Class<?> pluginClass) {
         if (!pluginClass.isAnnotationPresent(AIPlugin.class)) {
             return null;
         }
 
-        AIPluginSchema schema = new AIPluginSchema();
+        OpenAPI schema = new OpenAPI();
 
         AIPlugin aiPlugin = pluginClass.getAnnotation(AIPlugin.class);
         schema.setOpenapi(Constants.SCHEMA_VERSION);
@@ -76,12 +76,7 @@ public class PluginSchemaParser {
         response.setContent(new HashMap<>());
         response.getContent().put(MediaType.APPLICATION_JSON, responseMediaType);
         operation.getResponses().put(StatusCode.OK, response);
-        if (GraphAPIMethod.GET.equals(graph.method())) {
-            pathItem.setGet(operation);
-        } else {
-            pathItem.setPost(operation);
-        }
-
+        pathItem.setPost(operation);
         Examples examples = aiApi.examples();
         if (examples.text() != null && examples.text().length != 0) {
             operation.setExamples(new TextExampleReader(examples.text()).read());

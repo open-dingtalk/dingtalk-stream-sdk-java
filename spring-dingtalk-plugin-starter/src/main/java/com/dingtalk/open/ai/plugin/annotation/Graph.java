@@ -1,7 +1,5 @@
 package com.dingtalk.open.ai.plugin.annotation;
 
-import com.dingtalk.open.app.api.graph.GraphAPIMethod;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,10 +33,6 @@ public @interface Graph {
      * @return
      */
     String version() default "1.0";
-
-
-
-    GraphAPIMethod method() default GraphAPIMethod.POST;
 
     /**
      * 资源
