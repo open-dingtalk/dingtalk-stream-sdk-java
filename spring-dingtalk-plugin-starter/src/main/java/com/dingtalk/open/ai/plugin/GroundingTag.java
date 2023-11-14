@@ -9,6 +9,8 @@ public enum GroundingTag {
 
     NONE,
 
-    SYSTEM_UNION_GROUNDING;
+    SYSTEM_UNION_ID,
+
+    SYSTEM_TIME_POINT;
 
 }

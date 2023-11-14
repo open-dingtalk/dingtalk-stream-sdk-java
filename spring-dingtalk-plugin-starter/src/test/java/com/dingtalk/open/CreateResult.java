@@ -1,6 +1,6 @@
 package com.dingtalk.open;
 
-import com.dingtalk.open.ai.plugin.annotation.AIField;
+import com.dingtalk.open.ai.plugin.annotation.Schema;
 
 /**
  * @author feiyin
@@ -8,7 +8,7 @@ import com.dingtalk.open.ai.plugin.annotation.AIField;
  */
 public class CreateResult {
 
-    @AIField(desc = "是否成功")
+    @Schema(desc = "是否成功")
     private Boolean success;
 
     public Boolean getSuccess() {

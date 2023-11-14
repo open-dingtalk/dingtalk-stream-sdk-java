@@ -11,17 +11,17 @@ import com.dingtalk.open.ai.plugin.schema.PluginSchemaParser;
  * @author feiyin
  * @date 2023/11/7
  */
-@AIPlugin(name = "aone测试插件", description = "aone测试插件")
-public class TestAIPlugin {
+@AIPlugin(name = "会议小助手", description = "自动创建钉钉会议", version = "1.0.0")
+public class CreateMeetingPlugin {
 
-    @Graph(resource = "/aone/create/issue")
-    @AIApi(name = "createAone", description = "创建aone", examples = @Examples(file = "fewshots.json"))
-    public CreateResult createAone(AoneCreateReq req) {
+    @Graph(version ="1.0" ,resource = "/meeting/create")
+    @AIApi(name = "createMeeting", description = "创建钉钉会议API", examples = @Examples(file = "fewshots.json"))
+    public CreateResult createAone(CreateMeetingReq req) {
         return null;
     }
 
 
     public static void main(String[] args) throws Exception {
-        System.out.println(JSON.toJSONString(PluginSchemaParser.parseSchema(TestAIPlugin.class)));
+        System.out.println(JSON.toJSONString(PluginSchemaParser.parseSchema(CreateMeetingPlugin.class)));
     }
 }

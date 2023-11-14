@@ -8,12 +8,13 @@ import com.dingtalk.open.ai.plugin.annotation.*;
 import com.dingtalk.open.ai.plugin.error.ChatPluginError;
 import com.dingtalk.open.ai.plugin.error.ChatPluginException;
 import com.dingtalk.open.ai.plugin.util.Pair;
-import com.dingtalk.open.app.api.graph.GraphAPIMethod;
 import com.dingtalk.open.app.stream.protocol.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author feiyin
@@ -94,28 +95,34 @@ public class PluginSchemaParser {
         int index = 0;
         for (Field declaredField : pojoClass.getDeclaredFields()) {
             Schema desc = new Schema();
-            AIField AIField = declaredField.getAnnotation(AIField.class);
-            if (AIField == null) {
+            com.dingtalk.open.ai.plugin.annotation.Schema Schema = declaredField.getAnnotation(com.dingtalk.open.ai.plugin.annotation.Schema.class);
+            if (Schema == null) {
                 continue;
             }
-            String name = StringUtils.isEmpty(AIField.name()) ? declaredField.getName() : AIField.name();
+            String name = StringUtils.isEmpty(Schema.name()) ? declaredField.getName() : Schema.name();
             String type = parseType(declaredField.getType());
-            Boolean required = AIField.required();
-            String example = AIField.example();
+            Boolean required = Schema.required();
+            String example = Schema.example();
             desc.setType(type);
             desc.setRequired(required);
             desc.setExample(example);
-            desc.setDescription(AIField.desc());
+            desc.setDescription(Schema.desc());
             desc.setIndex(index++);
+            if (type.equalsIgnoreCase(FieldType.ARRAY)) {
+                String componentType = parseType(declaredField.getType().getComponentType());
+                com.dingtalk.open.ai.plugin.schema.Schema item = new Schema();
+                item.setType(componentType);
+                desc.setItems(item);
+            }
             //system grounding优先级最高
-            if (AIField.systemGrounding() != null && AIField.systemGrounding() != GroundingTag.NONE) {
+            if (Schema.systemGrounding() != null && Schema.systemGrounding() != GroundingTag.NONE) {
                 GroundingOperation option = new GroundingOperation();
-                option.setUrl(AIField.systemGrounding().name());
+                option.setUrl(Schema.systemGrounding().name());
                 desc.setGrounding(option);
-            } else if (AIField.graphGrounding() != null && !StringUtils.isEmpty(AIField.graphGrounding().path())) {
+            } else if (Schema.graphGrounding() != null && !StringUtils.isEmpty(Schema.graphGrounding().path())) {
                 GroundingOperation operation = new GroundingOperation();
-                operation.setUrl(AIField.graphGrounding().path());
-                operation.setMethod(AIField.graphGrounding().method());
+                operation.setUrl(Schema.graphGrounding().path());
+                operation.setMethod(Schema.graphGrounding().method());
                 desc.setGrounding(operation);
             }
             schema.getProperties().put(name, desc);
@@ -133,7 +140,7 @@ public class PluginSchemaParser {
             return FieldType.NUMBER;
         } else if (fieldKlass == String.class) {
             return FieldType.STRING;
-        } else if (fieldKlass.isArray()) {
+        } else if (fieldKlass.isArray() || fieldKlass.isAssignableFrom(List.class) || fieldKlass.isAssignableFrom(Set.class)) {
             return FieldType.ARRAY;
         }
         return FieldType.OBJECT;

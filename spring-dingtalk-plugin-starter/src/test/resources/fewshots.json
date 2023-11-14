@@ -1,13 +1,18 @@
 [
   {
-    "input" : "",
-    "output" : {
-      "abilityKey" : "createAone",
-      "params" : {
-        "author": "飞隐",
-        "assignTo" : "薛晨",
-        "expectTime" : "八点"
-      }
+    "input": "发送人 飞隐: 今天下午五点拉上张三、李四开个短会",
+    "output": {
+      "creator": "飞隐",
+      "participants": ["张三", "李四"],
+      "time": "今天下午五点"
+    }
+  },
+  {
+    "input": "发送人 飞隐: 明天上午和王五，赵六一起讨论一下这个问题",
+    "output": {
+      "creator": "飞隐",
+      "participants": ["王五","赵六"],
+      "time": "明天上午"
     }
   }
 ]

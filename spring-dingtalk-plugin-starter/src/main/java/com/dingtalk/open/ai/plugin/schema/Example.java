@@ -13,13 +13,5 @@ public class Example {
 
     private String input;
 
-    private Output output;
-
-    @Data
-    public static class Output {
-
-        private String abilityKey;
-
-        private Map<String, Object> params;
-    }
+    private Map<String, Object> output;
 }
