@@ -28,6 +28,8 @@ public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIReq
 
     @Override
     public GraphAPIResponse execute(GraphAPIRequest request) {
+        GraphInvokeContext context = new GraphInvokeContext();
+        context.addAllHeaders(request.getHeaders());
         try {
             GraphId graphId = GraphId.fromRequestLine(request.getRequestLine());
             GraphMethodDescriptor descriptor = listeners.get(graphId);
@@ -39,6 +41,8 @@ public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIReq
         } catch (Exception e) {
             LOGGER.error("[DingTalk] unexpected execute exception occurs when invoke graph api", e);
             return GraphUtils.failed(StatusLine.INTERNAL_ERROR);
+        } finally {
+            GraphInvokeContext.clear();
         }
     }
 
