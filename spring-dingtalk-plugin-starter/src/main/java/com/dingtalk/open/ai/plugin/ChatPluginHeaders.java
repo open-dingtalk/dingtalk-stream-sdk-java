@@ -7,10 +7,18 @@ package com.dingtalk.open.ai.plugin;
 public class ChatPluginHeaders {
 
     /**
-     * 回话ID
+     * 会话ID
      */
     public static final String CONVERSATION_ID_NAME = "x-conversationId";
 
+
+    public static final String CID_NAME = "x-cid";
+
+
+    public static final String ROBOT_UID = "x-robotUid";
+
+
+    public static final String ORG_ID = "x-orgId";
     /**
      * 回话类型
      */

@@ -54,4 +54,8 @@ public class GraphInvokeContext {
     }
 
 
+    public static GraphInvokeContext get() {
+        return CONTEXT.get();
+    }
+
 }
