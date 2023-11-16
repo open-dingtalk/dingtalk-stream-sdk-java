@@ -19,7 +19,7 @@ public class GraphMethodDescriptor {
 
     private Object target;
 
-    private GraphDispatcher dispatcher;
+    private OpenDingTalkGraphAPIDispatcher dispatcher;
 
     @SuppressWarnings("unchecked")
     public GraphMethodDescriptor() {
@@ -45,7 +45,7 @@ public class GraphMethodDescriptor {
         dispatcher.register(GraphAPIMethod.POST, graphPost.version(), graphPost.resource(), this);
     }
 
-    public void setDispatcher(GraphDispatcher dispatcher) {
+    public void setDispatcher(OpenDingTalkGraphAPIDispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
 }

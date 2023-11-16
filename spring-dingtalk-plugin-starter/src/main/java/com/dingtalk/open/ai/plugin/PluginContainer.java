@@ -25,7 +25,7 @@ public class PluginContainer implements ApplicationListener<ContextRefreshedEven
     private String clientSecret;
 
     @Autowired
-    private GraphDispatcher dispatcher;
+    private OpenDingTalkGraphAPIDispatcher dispatcher;
 
     private final List<AIPluginReporter> reporters = new LinkedList<>();
 

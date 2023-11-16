@@ -15,13 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author feiyin
  * @date 2023/11/7
  */
-public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIRequest, GraphAPIResponse> {
+public class OpenDingTalkGraphAPIDispatcher implements OpenDingTalkCallbackListener<GraphAPIRequest, GraphAPIResponse> {
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(GraphDispatcher.class);
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(OpenDingTalkGraphAPIDispatcher.class);
 
     private final Map<GraphId, GraphMethodDescriptor> listeners;
 
-    public GraphDispatcher() {
+    public OpenDingTalkGraphAPIDispatcher() {
         this.listeners = new ConcurrentHashMap<>();
     }
 

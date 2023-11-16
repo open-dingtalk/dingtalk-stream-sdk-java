@@ -25,8 +25,8 @@ public class AIPluginAutoConfiguration {
     }
 
     @Bean("graphDispatcher")
-    public GraphDispatcher configureDispatcher() {
-        return new GraphDispatcher();
+    public OpenDingTalkGraphAPIDispatcher configureDispatcher() {
+        return new OpenDingTalkGraphAPIDispatcher();
     }
 
 }

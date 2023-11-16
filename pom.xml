@@ -5,7 +5,7 @@
     <groupId>com.dingtalk.open</groupId>
     <artifactId>open-app-stream-client</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <modules>
         <module>app-stream-client</module>
         <module>app-stream-api</module>
@@ -84,14 +84,14 @@
     </dependencyManagement>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>sonatype</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>releases</id>
+            <url>http://mvnrepo.alibaba-inc.com/mvn/releases</url>
         </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://mvnrepo.alibaba-inc.com/mvn/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <build>
