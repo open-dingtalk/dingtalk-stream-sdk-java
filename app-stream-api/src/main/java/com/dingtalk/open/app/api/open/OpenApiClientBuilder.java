@@ -1,5 +1,8 @@
 package com.dingtalk.open.app.api.open;
 
+
+import java.net.Proxy;
+
 /**
  * @author feiyin
  * @date 2023/3/1
@@ -17,6 +20,7 @@ public class OpenApiClientBuilder {
     public String host;
 
     private int timeout = 3000;
+
 
     public OpenApiClientBuilder setHost(String host) {
         this.host = host;

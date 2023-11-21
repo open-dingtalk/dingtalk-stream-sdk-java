@@ -1,5 +1,7 @@
 package com.dingtalk.open.app.api.open;
 
+import java.net.Proxy;
+
 /**
  * @author feiyin
  * @date 2023/2/9
@@ -12,7 +14,7 @@ public interface OpenApiClient {
      * @return
      * @throws Exception
      */
-    OpenConnectionResponse openConnection(OpenConnectionRequest request) throws Exception;
+    OpenConnectionResponse openConnection(OpenConnectionRequest request, Proxy proxy) throws Exception;
 
 
 }

@@ -7,9 +7,12 @@ import com.dingtalk.open.app.api.callback.OpenDingTalkCallbackListener;
 import com.dingtalk.open.app.api.protocol.CommandExecutor;
 import com.dingtalk.open.app.api.protocol.EventCommandExecutor;
 import com.dingtalk.open.app.api.security.DingTalkCredential;
+import com.dingtalk.open.app.stream.network.api.NetProxy;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 import com.dingtalk.open.app.stream.protocol.CommandType;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -26,6 +29,8 @@ public class OpenDingTalkStreamClientBuilder {
     private int maxConnectionCount = 1;
     private int connectionTimeToLive = 6 * 60 * 60 * 1000;
     private long connectTimeout = 3 * 1000L;
+
+    private Proxy proxy;
 
     private KeepAliveOption keepAliveOption = new KeepAliveOption();
 
@@ -99,6 +104,17 @@ public class OpenDingTalkStreamClientBuilder {
         return this.openApiHost("https://pre-api.dingtalk.com");
     }
 
+    /**
+     * 设置代理方式
+     *
+     * @param netProxy
+     * @return
+     */
+    public OpenDingTalkStreamClientBuilder proxy(NetProxy netProxy) {
+        this.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(netProxy.getIp(), netProxy.getPort()));
+        return this;
+    }
+
     public OpenDingTalkClient build() {
         ClientOption option = new ClientOption();
         option.setConnectTimeout(connectTimeout);
@@ -107,7 +123,7 @@ public class OpenDingTalkStreamClientBuilder {
         option.setOpenApiHost(openApiHost);
         option.setKeepAliveOption(keepAliveOption);
         ExecutorService executor = ThreadUtil.newFixedExecutor(consumeThreads, "DingTalk-Consumer");
-        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions);
+        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions, proxy);
     }
 
     private void subscribe(CommandType type, String topic) {

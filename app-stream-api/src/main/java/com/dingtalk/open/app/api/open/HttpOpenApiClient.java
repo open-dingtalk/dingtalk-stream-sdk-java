@@ -7,6 +7,8 @@ import com.dingtalk.open.app.api.open.http.HttpConstants;
 import com.dingtalk.open.app.api.util.IoUtils;
 
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 
 /**
@@ -25,8 +27,15 @@ class HttpOpenApiClient implements OpenApiClient {
     }
 
     @Override
-    public OpenConnectionResponse openConnection(OpenConnectionRequest request) throws Exception {
-        final HttpURLConnection connection = (HttpURLConnection) new URL(host + "/v1.0/gateway/connections/open").openConnection();
+    public OpenConnectionResponse openConnection(OpenConnectionRequest request, Proxy proxy) throws Exception {
+        URL url =  new URL(host + "/v1.0/gateway/connections/open");
+
+        HttpURLConnection connection;
+        if (proxy != null) {
+            connection = (HttpURLConnection) url.openConnection(proxy);
+        } else {
+            connection = (HttpURLConnection) url.openConnection();
+        }
         connection.setRequestMethod(HttpConstants.METHOD_POST);
         connection.setReadTimeout(this.timeout);
         connection.setConnectTimeout(this.timeout);
