@@ -8,8 +8,8 @@ public class NetProxy {
     private String host;
     private Integer port;
 
-    public NetProxy(String ip, Integer port) {
-        this.host = ip;
+    public NetProxy(String host, Integer port) {
+        this.host = host;
         this.port = port;
     }
 
