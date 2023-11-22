@@ -1,19 +1,22 @@
 package com.dingtalk.open.app.api;
 
-import com.dingtalk.open.app.api.command.CommandDispatcher;
-import com.dingtalk.open.app.api.util.ThreadUtil;
 import com.dingtalk.open.app.api.callback.CallbackCommandExecutor;
 import com.dingtalk.open.app.api.callback.OpenDingTalkCallbackListener;
+import com.dingtalk.open.app.api.command.CommandDispatcher;
 import com.dingtalk.open.app.api.protocol.CommandExecutor;
 import com.dingtalk.open.app.api.protocol.EventCommandExecutor;
 import com.dingtalk.open.app.api.security.DingTalkCredential;
+import com.dingtalk.open.app.api.util.ThreadUtil;
 import com.dingtalk.open.app.stream.network.api.NetProxy;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 import com.dingtalk.open.app.stream.protocol.CommandType;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 /**
