@@ -81,7 +81,7 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
         request.setUa(UserAgent.getUserAgent().getUa());
         request.setSubscriptions(subscriptions);
         request.setLocalIp(IpUtils.getLocalIP());
-        OpenConnectionResponse response = openApiClient.openConnection(request, proxy);
+        OpenConnectionResponse response = openApiClient.openConnection(request);
         return new EndPointConnection(credential.getClientId(), response.getEndpoint(), response.getTicket(), proxy);
     }
 

@@ -8,7 +8,6 @@ import com.dingtalk.open.app.stream.protocol.ProtocolRequestFacade;
 import com.dingtalk.open.app.stream.protocol.system.SystemTopic;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
-import java.net.Proxy;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -178,7 +177,7 @@ public class DefaultSessionPool implements SessionPool {
                     }
                 }
             } catch (Throwable e) {
-                LOGGER.error("[DingTalk] establish connection failed", e);
+                LOGGER.error("[DingTalk] establish connection failed, {}", e);
             }
         }
     }
@@ -202,7 +201,7 @@ public class DefaultSessionPool implements SessionPool {
                 try {
                     return callable.call();
                 } catch (Exception e) {
-                    LOGGER.error("[DingTalk] retrievable executor execute failed", e);
+                    LOGGER.error("[DingTalk] retrievable executor execute failed, {}", e);
                     if (count.get() <= 0) {
                         throw e;
                     }

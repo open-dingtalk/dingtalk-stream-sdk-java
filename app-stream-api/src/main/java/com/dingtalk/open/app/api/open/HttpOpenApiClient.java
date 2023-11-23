@@ -18,15 +18,18 @@ class HttpOpenApiClient implements OpenApiClient {
 
     private final String host;
 
+    private final Proxy proxy;
+
     private final int timeout;
 
-    public HttpOpenApiClient(String host, int timeout) {
+    public HttpOpenApiClient(String host, int timeout, Proxy proxy) {
         this.host = host;
         this.timeout = timeout;
+        this.proxy = proxy;
     }
 
     @Override
-    public OpenConnectionResponse openConnection(OpenConnectionRequest request, Proxy proxy) throws Exception {
+    public OpenConnectionResponse openConnection(OpenConnectionRequest request) throws Exception {
         URL url =  new URL(host + "/v1.0/gateway/connections/open");
 
         HttpURLConnection connection;

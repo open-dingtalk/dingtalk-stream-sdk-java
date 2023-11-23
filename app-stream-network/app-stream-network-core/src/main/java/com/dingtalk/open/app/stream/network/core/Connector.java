@@ -69,7 +69,7 @@ public class Connector {
             }
             INIT = true;
         } catch (Exception e) {
-            LOGGER.error("[DingTalk] client init transport failed", e);
+            LOGGER.error("[DingTalk] client init transport failed, {}", e);
         } finally {
             INIT_LOCK.unlock();
         }
