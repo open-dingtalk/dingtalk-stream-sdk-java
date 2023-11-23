@@ -34,7 +34,6 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
     private OpenApiClient openApiClient;
     private Set<Subscription> subscriptions;
     private final AtomicReference<Status> status;
-
     private final Proxy proxy;
 
     public OpenDingTalkStreamClient(DingTalkCredential credential, CommandDispatcher dispatcher, ExecutorService executor, ClientOption option, Set<Subscription> subscriptions,
@@ -54,7 +53,7 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
             this.openApiClient = OpenApiClientBuilder.create().setHost(option.getOpenApiHost()).setTimeout(option.getConnectionTTL()).build();
             final EndPointConnectionFactory factory = () -> openConnection(this.credential, subscriptions, proxy);
             ClientConnectionListener listener = new AppServiceListener(dispatcher, executor);
-            this.netWorkService = new NetWorkService(factory, listener, option.getMaxConnectionCount(), option.getConnectionTTL(), option.getConnectTimeout(), option.getKeepAliveOption().getKeepAliveIdleMill(), proxy);
+            this.netWorkService = new NetWorkService(factory, listener, option.getMaxConnectionCount(), option.getConnectionTTL(), option.getConnectTimeout(), option.getKeepAliveOption().getKeepAliveIdleMill());
             this.netWorkService.start();
             this.status.set(Status.ACTIVE);
         } else if (status.get() == Status.INACTIVE) {

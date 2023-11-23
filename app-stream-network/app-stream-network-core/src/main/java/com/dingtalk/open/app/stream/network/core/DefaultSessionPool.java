@@ -34,9 +34,8 @@ public class DefaultSessionPool implements SessionPool {
     private final EndPointConnectionFactory factory;
     private final ClientConnectionListener appListener;
     private final Long keepAliveIdle;
-    private final Proxy proxy;
 
-    public DefaultSessionPool(EndPointConnectionFactory factory, int maxConnections, long ttl, long connectionTimeout, long keepAliveIdle, ClientConnectionListener appListener, Proxy proxy) {
+    public DefaultSessionPool(EndPointConnectionFactory factory, int maxConnections, long ttl, long connectionTimeout, long keepAliveIdle, ClientConnectionListener appListener) {
         this.sessions = new ConcurrentHashMap<>();
         this.status = new AtomicBoolean(true);
         this.factory = factory;
@@ -46,7 +45,6 @@ public class DefaultSessionPool implements SessionPool {
         this.connectionTimeout = connectionTimeout;
         this.connectionTTL = ttl;
         this.keepAliveIdle = keepAliveIdle;
-        this.proxy = proxy;
     }
 
 

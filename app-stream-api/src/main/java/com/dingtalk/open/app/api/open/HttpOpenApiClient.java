@@ -7,7 +7,6 @@ import com.dingtalk.open.app.api.open.http.HttpConstants;
 import com.dingtalk.open.app.api.util.IoUtils;
 
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 

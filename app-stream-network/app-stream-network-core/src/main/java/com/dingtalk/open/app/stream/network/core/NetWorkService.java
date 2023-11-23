@@ -12,8 +12,8 @@ import java.net.Proxy;
 public class NetWorkService {
     private final DefaultSessionPool sessionPool;
 
-    public NetWorkService(EndPointConnectionFactory factory, ClientConnectionListener listener, int maxConnection, long ttl, long connectTimeout, long keepAliveIdle, Proxy proxy) {
-        this.sessionPool = new DefaultSessionPool(factory, maxConnection, ttl, connectTimeout, keepAliveIdle, listener, proxy);
+    public NetWorkService(EndPointConnectionFactory factory, ClientConnectionListener listener, int maxConnection, long ttl, long connectTimeout, long keepAliveIdle) {
+        this.sessionPool = new DefaultSessionPool(factory, maxConnection, ttl, connectTimeout, keepAliveIdle, listener);
     }
 
     /**
