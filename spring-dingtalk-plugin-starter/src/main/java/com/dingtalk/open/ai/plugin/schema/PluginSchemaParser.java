@@ -39,6 +39,7 @@ public class PluginSchemaParser {
         info.setTitle(aiPlugin.name());
         info.setKeywords(aiPlugin.keywords());
         schema.setInfo(info);
+        schema.setKeywords(aiPlugin.keywords());
         schema.setPaths(new HashMap<>());
         for (Method method : pluginClass.getDeclaredMethods()) {
             Pair<String, PathItem> pathItem = toPathItem(method);

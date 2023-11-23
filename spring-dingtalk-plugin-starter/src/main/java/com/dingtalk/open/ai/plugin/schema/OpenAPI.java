@@ -28,4 +28,6 @@ public class OpenAPI {
      */
     private Map<String, PathItem> paths;
 
+    private String [] keywords;
+
 }
