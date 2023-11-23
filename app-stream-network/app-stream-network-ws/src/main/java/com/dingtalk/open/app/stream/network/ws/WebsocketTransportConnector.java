@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolConfig;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
+import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Protocol(protocol = {TransportProtocol.WSS})
 public class WebsocketTransportConnector implements TransportConnector {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(WebsocketTransportConnector.class);
+
     @Override
     public Session connect(EndPointConnection connection, ClientConnectionListener listener, ConnectOption option) throws Exception {
         LOGGER.info("[DingTalk] start websocket connection, uri={}", connection.getEndPoint().toString());
@@ -41,12 +43,10 @@ public class WebsocketTransportConnector implements TransportConnector {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {
-                WebSocketClientProtocolConfig config = WebSocketClientProtocolConfig.newBuilder().dropPongFrames(false)
-                        .webSocketUri(configureWebsocketUri(connection))
-                        .handshakeTimeoutMillis(option.getTtl())
-                        .dropPongFrames(false)
-                        .handleCloseFrames(true)
-                        .build();
+                if (connection.getProxy() != null) {
+                    socketChannel.pipeline().addLast(new HttpProxyHandler(connection.getProxy().address()));
+                }
+                WebSocketClientProtocolConfig config = WebSocketClientProtocolConfig.newBuilder().dropPongFrames(false).webSocketUri(configureWebsocketUri(connection)).handshakeTimeoutMillis(option.getTtl()).dropPongFrames(false).handleCloseFrames(true).build();
                 SslContext sslContext = SslContextBuilder.forClient().build();
                 if (connection.getProtocol().isTls()) {
                     final SSLEngine engine = sslContext.newEngine(socketChannel.alloc());

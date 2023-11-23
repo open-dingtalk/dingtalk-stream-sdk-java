@@ -29,7 +29,7 @@ public class AppServiceListener implements ClientConnectionListener {
             try {
                 commandDispatcher.execute(context);
             } catch (Exception e) {
-                LOGGER.error("[DingTalk] dispatch command failed", e);
+                LOGGER.error("[DingTalk] dispatch command failed, {}", e);
             }
         });
     }

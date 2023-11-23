@@ -1,8 +1,9 @@
 package com.dingtalk.open.app.stream.network.core;
 
 import com.dingtalk.open.app.stream.network.api.ClientConnectionListener;
-import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
-import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
+
+import java.net.Proxy;
+
 
 /**
  * @author feiyin
@@ -11,14 +12,10 @@ import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
 public class NetWorkService {
     private final DefaultSessionPool sessionPool;
 
-    public NetWorkService(EndPointConnectionFactory factory,
-                          ClientConnectionListener listener,
-                          int maxConnection,
-                          long ttl,
-                          long connectTimeout,
-                          long keepAliveIdle) {
+    public NetWorkService(EndPointConnectionFactory factory, ClientConnectionListener listener, int maxConnection, long ttl, long connectTimeout, long keepAliveIdle) {
         this.sessionPool = new DefaultSessionPool(factory, maxConnection, ttl, connectTimeout, keepAliveIdle, listener);
     }
+
     /**
      * 开始
      */

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.dingtalk.open</groupId>
         <artifactId>app-stream-network</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -25,6 +25,10 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
         </dependency>
     </dependencies>
 </project>
