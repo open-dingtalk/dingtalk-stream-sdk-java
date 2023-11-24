@@ -50,7 +50,7 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
     @Override
     public synchronized void start() throws OpenDingTalkAppException {
         if (status.get() == Status.INIT) {
-            this.openApiClient = OpenApiClientBuilder.create().setHost(option.getOpenApiHost()).setTimeout(option.getConnectionTTL()).build();
+            this.openApiClient = OpenApiClientBuilder.create().setHost(option.getOpenApiHost()).setTimeout(option.getConnectionTTL()).setProxy(proxy).build();
             final EndPointConnectionFactory factory = () -> openConnection(this.credential, subscriptions, proxy);
             ClientConnectionListener listener = new AppServiceListener(dispatcher, executor);
             this.netWorkService = new NetWorkService(factory, listener, option.getMaxConnectionCount(), option.getConnectionTTL(), option.getConnectTimeout(), option.getKeepAliveOption().getKeepAliveIdleMill());
