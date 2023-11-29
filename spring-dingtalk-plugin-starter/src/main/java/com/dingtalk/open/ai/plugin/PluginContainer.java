@@ -53,7 +53,11 @@ public class PluginContainer implements ApplicationListener<ContextRefreshedEven
         });
 
         try {
-            OpenDingTalkStreamClientBuilder.custom().preEnv().credential(new AuthClientCredential(clientId, clientSecret)).registerCallbackListener(DingTalkStreamTopics.GRAPH_API_TOPIC, dispatcher).build().start();
+            OpenDingTalkStreamClientBuilder builder = OpenDingTalkStreamClientBuilder.custom();
+            if (Env.isPre()) {
+                builder.preEnv();
+            }
+            builder.credential(new AuthClientCredential(clientId, clientSecret)).registerCallbackListener(DingTalkStreamTopics.GRAPH_API_TOPIC, dispatcher).build().start();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

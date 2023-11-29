@@ -15,7 +15,7 @@ public class PluginProperties {
 
     private String clientSecret;
 
-    private String env;
+    private Boolean pre;
 
     public String getClientId() {
         return clientId;
@@ -41,11 +41,11 @@ public class PluginProperties {
         this.enabled = enabled;
     }
 
-    public String getEnv() {
-        return env;
+    public Boolean getPre() {
+        return pre;
     }
 
-    public void setEnv(String env) {
-        this.env = env;
+    public void setPre(Boolean pre) {
+        this.pre = pre;
     }
 }

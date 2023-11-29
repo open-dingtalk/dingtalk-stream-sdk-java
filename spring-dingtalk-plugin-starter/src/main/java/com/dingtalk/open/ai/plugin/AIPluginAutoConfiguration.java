@@ -16,6 +16,9 @@ public class AIPluginAutoConfiguration {
 
     @Bean(name = "pluginContainer")
     public PluginContainer configureContainer(PluginProperties properties) {
+        if (Boolean.TRUE.equals(properties.getPre())) {
+            Env.setPre();
+        }
         return new PluginContainer(properties.getClientId(), properties.getClientSecret());
     }
 
