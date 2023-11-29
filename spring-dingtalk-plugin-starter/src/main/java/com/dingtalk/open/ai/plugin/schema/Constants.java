@@ -9,5 +9,5 @@ class Constants {
     public static final String SCHEMA_VERSION = "3.0.1";
 
 
-    public static final String[] SERVER_HOST = new String[]{"stream://graph.dingtalk.com"};
+    public static final Server[] SERVER_HOST = new Server[]{new Server("stream://graph.dingtalk.com", "")};
 }

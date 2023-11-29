@@ -23,7 +23,7 @@ public class OpenAPI {
     /**
      * 服务器信息
      */
-    private String[] servers;
+    private Server[] servers;
     /**
      * 路径信息
      */
