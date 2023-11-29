@@ -6,7 +6,7 @@ package com.dingtalk.open.ai.plugin.schema;
  */
 class Constants {
 
-    public static final String SCHEMA_VERSION = "3.0.0";
+    public static final String SCHEMA_VERSION = "3.0.1";
 
 
     public static final String[] SERVER_HOST = new String[]{"stream://graph.dingtalk.com"};
