@@ -1,5 +1,6 @@
 package com.dingtalk.open.ai.plugin.schema;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Map;
@@ -32,6 +33,7 @@ public class Operation {
     /**
      * 示例
      */
+    @JSONField(name = "x-examples")
     private Example[] examples;
 
 }

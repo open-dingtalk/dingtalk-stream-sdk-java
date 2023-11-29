@@ -15,6 +15,8 @@ public class PluginProperties {
 
     private String clientSecret;
 
+    private String env;
+
     public String getClientId() {
         return clientId;
     }
@@ -37,5 +39,13 @@ public class PluginProperties {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
     }
 }

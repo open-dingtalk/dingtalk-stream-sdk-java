@@ -21,9 +21,5 @@ public class Info {
      */
     private String description;
 
-    /**
-     * 插件的关键词
-     */
-    private String[] keywords;
 
 }

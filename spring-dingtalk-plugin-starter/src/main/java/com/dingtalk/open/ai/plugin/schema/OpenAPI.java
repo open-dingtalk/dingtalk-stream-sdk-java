@@ -1,5 +1,6 @@
 package com.dingtalk.open.ai.plugin.schema;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Map;
@@ -28,6 +29,8 @@ public class OpenAPI {
      */
     private Map<String, PathItem> paths;
 
+    @JSONField(name = "x-keywords")
     private String [] keywords;
+
 
 }
