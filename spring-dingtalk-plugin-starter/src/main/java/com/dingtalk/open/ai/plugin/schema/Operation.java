@@ -20,6 +20,7 @@ public class Operation {
      */
     private String operationId;
 
+    @JSONField(name = "x-confirmParams")
     private Boolean confirmParams;
     /**
      * 请求body
