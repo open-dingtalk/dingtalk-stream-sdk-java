@@ -29,7 +29,7 @@ public class OpenAPI {
      */
     private Map<String, PathItem> paths;
 
-    @JSONField(name = "x-keywords")
+    @JSONField(name = "x-dingtalk-phrases")
     private String [] keywords;
 
 

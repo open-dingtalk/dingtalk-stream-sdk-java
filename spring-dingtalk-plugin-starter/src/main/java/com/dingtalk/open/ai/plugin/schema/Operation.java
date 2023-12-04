@@ -20,7 +20,7 @@ public class Operation {
      */
     private String operationId;
 
-    @JSONField(name = "x-confirmParams")
+    @JSONField(name = "x-dingtalk-confirmParams")
     private Boolean confirmParams;
     /**
      * 请求body
@@ -34,7 +34,7 @@ public class Operation {
     /**
      * 示例
      */
-    @JSONField(name = "x-examples")
+    @JSONField(name = "x-dingtalk-examples")
     private Example[] examples;
 
 }
