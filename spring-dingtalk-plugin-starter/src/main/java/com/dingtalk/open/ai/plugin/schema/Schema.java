@@ -1,7 +1,5 @@
 package com.dingtalk.open.ai.plugin.schema;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.dingtalk.open.ai.plugin.GroundingOperation;
 import lombok.Data;
 
 import java.util.Map;
@@ -22,9 +20,6 @@ public class Schema {
     private String example;
 
     private Integer index;
-
-    @JSONField(name = "x-grounding")
-    private GroundingOperation grounding;
 
     private Map<String, Schema> properties;
 

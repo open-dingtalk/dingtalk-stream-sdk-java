@@ -116,17 +116,6 @@ public class PluginSchemaParser {
                 item.setType(componentType);
                 desc.setItems(item);
             }
-            //system grounding优先级最高
-            if (Schema.systemGrounding() != null && Schema.systemGrounding() != GroundingTag.NONE) {
-                GroundingOperation option = new GroundingOperation();
-                option.setUrl(Schema.systemGrounding().name());
-                desc.setGrounding(option);
-            } else if (Schema.graphGrounding() != null && !StringUtils.isEmpty(Schema.graphGrounding().path())) {
-                GroundingOperation operation = new GroundingOperation();
-                operation.setUrl(Schema.graphGrounding().path());
-                operation.setMethod(Schema.graphGrounding().method());
-                desc.setGrounding(operation);
-            }
             schema.getProperties().put(name, desc);
         }
         return schema;
