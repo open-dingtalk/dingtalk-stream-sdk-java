@@ -1,6 +1,6 @@
 package com.dingtalk.open.app.api.util;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.dingtalk.open.app.api.graph.GraphAPIResponse;
 import com.dingtalk.open.app.api.graph.GraphHeaders;
 import com.dingtalk.open.app.api.graph.MediaType;

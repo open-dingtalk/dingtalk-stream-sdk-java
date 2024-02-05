@@ -1,7 +1,7 @@
 package com.dingtalk.open.app.api.chatbot;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
 import com.dingtalk.open.app.api.open.http.HttpConstants;
 import com.dingtalk.open.app.api.util.IoUtils;
 
@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.alibaba.fastjson2.JSONWriter.Feature.WriteEnumUsingToString;
 
 public class BotReplier {
     private final String webhook;
@@ -41,12 +43,12 @@ public class BotReplier {
         Map<String, Object> request = new HashMap<>();
         request.put("msgtype", "text");
         request.put("text", textContent);
-        if (atUserIds != null && atUserIds.size() > 0) {
+        if (atUserIds != null && !atUserIds.isEmpty()) {
             Map<String, Object> atContent = new HashMap<>();
             atContent.put("atUserIds", Collections.singletonList(""));
             request.put("at", atContent);
         }
-        connection.getOutputStream().write(JSON.toJSONBytes(request, SerializerFeature.WriteEnumUsingToString));
+        connection.getOutputStream().write(JSON.toJSONBytes(request, WriteEnumUsingToString));
         connection.getOutputStream().flush();
         if (connection.getResponseCode() == HttpConstants.STATUS_OK) {
             try {
@@ -74,12 +76,12 @@ public class BotReplier {
         Map<String, Object> request = new HashMap<>();
         request.put("msgtype", "markdown");
         request.put("markdown", markdownContent);
-        if (atUserIds != null && atUserIds.size() > 0) {
+        if (atUserIds != null && !atUserIds.isEmpty()) {
             Map<String, Object> atContent = new HashMap<>();
             atContent.put("atUserIds", Collections.singletonList(""));
             request.put("at", atContent);
         }
-        connection.getOutputStream().write(JSON.toJSONBytes(request, SerializerFeature.WriteEnumUsingToString));
+        connection.getOutputStream().write(JSON.toJSONBytes(request, WriteEnumUsingToString));
         connection.getOutputStream().flush();
         if (connection.getResponseCode() == HttpConstants.STATUS_OK) {
             try {

@@ -1,6 +1,6 @@
 package com.dingtalk.open.app.api.protocol;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.dingtalk.open.app.api.DingTalkAppError;
 import com.dingtalk.open.app.api.GenericEventListener;
 import com.dingtalk.open.app.api.Preconditions;
