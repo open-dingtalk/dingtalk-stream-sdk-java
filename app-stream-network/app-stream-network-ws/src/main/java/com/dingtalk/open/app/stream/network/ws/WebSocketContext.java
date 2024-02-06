@@ -1,7 +1,7 @@
 package com.dingtalk.open.app.stream.network.ws;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
 import com.dingtalk.open.app.stream.network.api.Context;
 import com.dingtalk.open.app.stream.network.api.ServiceException;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
@@ -29,7 +29,7 @@ public class WebSocketContext implements Context {
     @Override
     public void replay(Object payload) {
         ProtocolResponse response = ProtocolResponse.new200Response(request);
-        response.setData(JSON.toJSONString(payload, SerializerFeature.WriteMapNullValue));
+        response.setData(JSON.toJSONString(payload, JSONWriter.Feature.WriteMapNullValue));
         context.writeAndFlush(response).addListener(future -> {
             if (!future.isSuccess()) {
                 LOGGER.error("[DingTalk] websocket connection reply response failed, connectionId={}, messageId={}", connectionId, request.getMessageId(), future.cause());

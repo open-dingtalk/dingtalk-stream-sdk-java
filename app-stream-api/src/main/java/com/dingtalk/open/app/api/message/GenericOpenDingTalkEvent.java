@@ -1,6 +1,7 @@
 package com.dingtalk.open.app.api.message;
 
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSONObject;
 
 /**
  * @author feiyin

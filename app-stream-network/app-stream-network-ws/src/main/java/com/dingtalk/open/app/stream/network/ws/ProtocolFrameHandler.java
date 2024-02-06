@@ -1,8 +1,6 @@
 package com.dingtalk.open.app.stream.network.ws;
 
-import com.alibaba.fastjson.JSON;
-import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
-import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
+import com.alibaba.fastjson2.JSON;
 import com.dingtalk.open.app.stream.network.api.utils.NettyByteBufUtils;
 import com.dingtalk.open.app.stream.protocol.ProtocolRequest;
 import com.dingtalk.open.app.stream.protocol.ProtocolResponse;

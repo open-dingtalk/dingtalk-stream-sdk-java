@@ -1,7 +1,7 @@
 package com.dingtalk.open.app.api.open;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
 import com.dingtalk.open.app.api.DingTalkAppError;
 import com.dingtalk.open.app.api.open.http.HttpConstants;
 import com.dingtalk.open.app.api.util.IoUtils;
@@ -46,7 +46,7 @@ class HttpOpenApiClient implements OpenApiClient {
         connection.setDoInput(true);
         connection.setDoOutput(true);
         connection.connect();
-        connection.getOutputStream().write(JSON.toJSONBytes(request, SerializerFeature.WriteEnumUsingToString));
+        connection.getOutputStream().write(JSON.toJSONBytes(request, JSONWriter.Feature.WriteEnumUsingToString));
         connection.getOutputStream().flush();
         if (connection.getResponseCode() == HttpConstants.STATUS_OK) {
             byte[] content = IoUtils.readAll(connection.getInputStream());

@@ -1,6 +1,7 @@
 package com.dingtalk.open.app.api.graph;
 
-import com.alibaba.fastjson.annotation.JSONField;
+
+import com.alibaba.fastjson2.annotation.JSONField;
 
 import java.util.Map;
 

@@ -1,6 +1,6 @@
 package com.dingtalk.open.app.api.protocol;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.dingtalk.open.app.stream.network.api.Context;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
 import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
