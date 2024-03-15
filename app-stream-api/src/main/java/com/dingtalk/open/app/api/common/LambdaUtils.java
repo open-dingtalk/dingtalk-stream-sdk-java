@@ -2,6 +2,7 @@ package com.dingtalk.open.app.api.common;
 
 import com.dingtalk.open.app.api.DingTalkAppError;
 import com.dingtalk.open.app.api.OpenDingTalkAppException;
+import com.dingtalk.open.app.api.util.JavaVersionUtil;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
@@ -18,7 +19,9 @@ import java.util.stream.Collectors;
  * @date 2023/3/19
  */
 public class LambdaUtils {
-    private static final Pattern LAMBDA_PATTERN = Pattern.compile(".*\\$\\$Lambda\\$[0-9]+/.*");
+    private static final Pattern LAMBDA_PATTERN_JDK8_20 = Pattern.compile(".*\\$\\$Lambda\\$[0-9]+/.*");
+
+    private static final Pattern LAMBDA_PATTERN_JDK_21 = Pattern.compile(".*\\$\\$Lambda/.*");
 
     private static final Pattern PARAMETER_TYPE_PATTERN = Pattern.compile("\\((.*)\\).*");
 
@@ -28,9 +31,12 @@ public class LambdaUtils {
         if (obj == null) {
             return false;
         }
-
-        if (obj.getClass().isSynthetic() && LAMBDA_PATTERN.matcher(obj.getClass().getSimpleName()).matches()) {
-            return true;
+        if (obj.getClass().isSynthetic()) {
+            if (JavaVersionUtil.getMainVersion() < 21) {
+                return LAMBDA_PATTERN_JDK8_20.matcher(obj.getClass().getSimpleName()).matches();
+            } else {
+                return LAMBDA_PATTERN_JDK_21.matcher(obj.getClass().getSimpleName()).matches();
+            }
         }
         return false;
     }
