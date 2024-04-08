@@ -30,7 +30,7 @@ public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIReq
     public GraphAPIResponse execute(GraphAPIRequest request) {
         HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) new URL("http://localhost:" + port + request.getRequestLine().getUri().toString()).openConnection();
+            connection = (HttpURLConnection) new URL("http://127.0.0.1:" + port + request.getRequestLine().getUri().toString()).openConnection();
             connection.setRequestMethod(request.getRequestLine().getMethod().name());
             if (request.getHeaders() != null) {
                 for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
@@ -55,8 +55,10 @@ public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIReq
             StatusLine statusLine = new StatusLine(code, msg);
             GraphAPIResponse response = new GraphAPIResponse();
             response.setStatusLine(statusLine);
-            if (connection.getContentLength() > 0) {
+            if (code < 400) {
                 response.setBody(new String(IoUtils.readAll(connection.getInputStream())));
+            } else {
+                response.setBody(new String(IoUtils.readAll(connection.getErrorStream())));
             }
             Map<String, List<String>> headerFields = connection.getHeaderFields();
             Map<String, String> headers = new HashMap<>(4);
@@ -74,7 +76,10 @@ public class GraphDispatcher implements OpenDingTalkCallbackListener<GraphAPIReq
             return GraphUtils.failed(new StatusLine(500, e.getMessage()));
         } finally {
             if (connection != null) {
-                connection.disconnect();
+                try {
+                    connection.disconnect();
+                } catch (Exception ignored) {
+                }
             }
         }
     }
