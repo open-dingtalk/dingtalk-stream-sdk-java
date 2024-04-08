@@ -3,6 +3,7 @@ package com.dingtalk.open.app.api;
 import com.dingtalk.open.app.api.callback.CallbackCommandExecutor;
 import com.dingtalk.open.app.api.callback.OpenDingTalkCallbackListener;
 import com.dingtalk.open.app.api.command.CommandDispatcher;
+import com.dingtalk.open.app.api.graph.GraphDispatcher;
 import com.dingtalk.open.app.api.protocol.CommandExecutor;
 import com.dingtalk.open.app.api.protocol.EventCommandExecutor;
 import com.dingtalk.open.app.api.security.DingTalkCredential;
@@ -117,6 +118,19 @@ public class OpenDingTalkStreamClientBuilder {
         this.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(netProxy.getIp(), netProxy.getPort()));
         return this;
     }
+
+
+    /**
+     * 把Graph请求转发到Http接口
+     *
+     * @param port
+     * @return
+     */
+    public OpenDingTalkStreamClientBuilder forwardGraphRequestToHTTP(int port) {
+        //把graph请求代理到http端口
+        return registerCallbackListener("/v1.0/graph/api/invoke", new GraphDispatcher(port));
+    }
+
 
     public OpenDingTalkClient build() {
         ClientOption option = new ClientOption();
