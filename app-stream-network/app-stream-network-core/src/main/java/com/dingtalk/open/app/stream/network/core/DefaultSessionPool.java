@@ -165,8 +165,7 @@ public class DefaultSessionPool implements SessionPool {
                             closeSession(previous.getId());
                         }
                     }
-                    Session session = new RetryRunner<Session>(MAX_RETRY_COUNT, new ExponentialBackoffPolicy())
-                            .run(() -> Connector.connect(connection, new TransportConnectionListener(), connectionTimeout, connectionTTL, keepAliveIdle));
+                    Session session = Connector.connect(connection, new TransportConnectionListener(), connectionTimeout, connectionTTL, keepAliveIdle);
                     if (session == null) {
                         return;
                     }
