@@ -46,7 +46,9 @@ public class WebsocketTransportConnector implements TransportConnector {
                 if (connection.getProxy() != null) {
                     socketChannel.pipeline().addLast(new HttpProxyHandler(connection.getProxy().address()));
                 }
-                WebSocketClientProtocolConfig config = WebSocketClientProtocolConfig.newBuilder().dropPongFrames(false).webSocketUri(configureWebsocketUri(connection)).handshakeTimeoutMillis(option.getTtl()).dropPongFrames(false).handleCloseFrames(true).build();
+                WebSocketClientProtocolConfig config = WebSocketClientProtocolConfig.newBuilder()
+                        .maxFramePayloadLength(256 * 1024)
+                        .dropPongFrames(false).webSocketUri(configureWebsocketUri(connection)).handshakeTimeoutMillis(option.getTtl()).dropPongFrames(false).handleCloseFrames(true).build();
                 SslContext sslContext = SslContextBuilder.forClient().build();
                 if (connection.getProtocol().isTls()) {
                     final SSLEngine engine = sslContext.newEngine(socketChannel.alloc());
