@@ -1,4 +1,8 @@
-<p align="center">
+<p align="left">
+  <a target="_blank" href="https://github.com/open-dingtalk/dingtalk-stream-sdk-java/actions/workflows/release.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/open-dingtalk/dingtalk-stream-sdk-java/release.yml" />
+  </a>
+
   <a target="_blank" href="https://s01.oss.sonatype.org/?#nexus-search;gav~com.dingtalk.open~dingtalk-stream~~~">
     <img src="https://img.shields.io/maven-central/v/com.dingtalk.open/dingtalk-stream" />
   </a>
