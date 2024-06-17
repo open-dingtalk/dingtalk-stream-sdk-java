@@ -1,3 +1,9 @@
+<p align="center">
+  <a target="_blank" href="https://s01.oss.sonatype.org/?#nexus-search;gav~com.dingtalk.open~dingtalk-stream~~~">
+    <img src="https://img.shields.io/maven-central/v/com.dingtalk.open/dingtalk-stream" />
+  </a>
+</p>
+
 # DingTalk Stream Mode 介绍
 
 Java SDK for DingTalk Stream Mode API, Compared with the webhook mode, it is easier to access the DingTalk chatbot
