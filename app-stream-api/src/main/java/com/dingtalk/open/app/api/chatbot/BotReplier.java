@@ -1,7 +1,6 @@
 package com.dingtalk.open.app.api.chatbot;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONWriter;
 import com.dingtalk.open.app.api.open.http.HttpConstants;
 import com.dingtalk.open.app.api.util.IoUtils;
 
