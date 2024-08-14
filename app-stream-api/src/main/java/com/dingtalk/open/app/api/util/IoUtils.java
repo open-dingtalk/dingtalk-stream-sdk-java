@@ -1,5 +1,6 @@
 package com.dingtalk.open.app.api.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 /**
@@ -7,16 +8,19 @@ import java.io.InputStream;
  * @date 2023/3/1
  */
 public class IoUtils {
-    public static byte[] readAll(InputStream stream) throws Exception {
-        if (stream == null) {
+    private static final int EOF = -1;
+    private static final int BUFFER_SIZE = 4 * 1024;
+
+    public static byte[] readAll(InputStream input) throws Exception {
+        if (input == null) {
             return null;
         }
-        int count = stream.available();
-        byte[] content = new byte[count];
-        while (count > 0) {
-            int readBytes = stream.read(content);
-            count -= readBytes;
+        ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int n;
+        while (EOF != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
         }
-        return content;
+        return output.toByteArray();
     }
 }
