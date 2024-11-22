@@ -68,9 +68,10 @@ public class OpenDingTalkStreamClientBuilder {
     public <Req, Resp> OpenDingTalkStreamClientBuilder registerCallbackListener(String topic, OpenDingTalkCallbackListener<Req, Resp> callbackListener) {
         Preconditions.notNull(topic);
         Preconditions.notNull(callbackListener);
+        String actualTopic = topic.trim();
         CallbackCommandExecutor executor = (CallbackCommandExecutor) this.commands.computeIfAbsent(CommandType.CALLBACK, (key) -> new CallbackCommandExecutor());
-        executor.register(topic, callbackListener);
-        subscribe(CommandType.CALLBACK, topic);
+        executor.register(actualTopic, callbackListener);
+        subscribe(CommandType.CALLBACK, actualTopic);
         return this;
     }
 
