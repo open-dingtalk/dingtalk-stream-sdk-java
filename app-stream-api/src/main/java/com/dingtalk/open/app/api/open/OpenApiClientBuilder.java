@@ -1,6 +1,6 @@
 package com.dingtalk.open.app.api.open;
 
-import java.net.Proxy;
+import com.dingtalk.open.app.stream.network.api.NetProxy;
 
 /**
  * @author feiyin
@@ -18,7 +18,7 @@ public class OpenApiClientBuilder {
 
     public String host;
 
-    private Proxy proxy;
+    private NetProxy netProxy;
 
     private int timeout = 3000;
 
@@ -32,12 +32,12 @@ public class OpenApiClientBuilder {
         return this;
     }
 
-    public OpenApiClientBuilder setProxy(Proxy proxy) {
-        this.proxy = proxy;
+    public OpenApiClientBuilder setProxy(NetProxy netProxy) {
+        this.netProxy = netProxy;
         return this;
     }
 
     public OpenApiClient build() {
-        return new HttpOpenApiClient(host, timeout, proxy);
+        return new HttpOpenApiClient(host, timeout, netProxy);
     }
 }

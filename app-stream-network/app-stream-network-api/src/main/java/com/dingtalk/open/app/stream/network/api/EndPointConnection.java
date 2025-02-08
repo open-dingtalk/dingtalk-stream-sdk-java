@@ -1,6 +1,5 @@
 package com.dingtalk.open.app.stream.network.api;
 
-import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -13,9 +12,9 @@ public class EndPointConnection {
     private final URI endPoint;
     private final String connectionId;
 
-    private final Proxy proxy;
+    private final NetProxy netProxy;
 
-    public EndPointConnection(String clientId, String endPoint, String connectionId, Proxy proxy) {
+    public EndPointConnection(String clientId, String endPoint, String connectionId, NetProxy netProxy) {
         this.clientId = clientId;
         try {
             this.endPoint = new URI(endPoint);
@@ -23,7 +22,7 @@ public class EndPointConnection {
             throw new RuntimeException(e);
         }
         this.connectionId = connectionId;
-        this.proxy = proxy;
+        this.netProxy = netProxy;
     }
 
     public URI getEndPoint() {
@@ -42,7 +41,7 @@ public class EndPointConnection {
         return TransportProtocol.parseScheme(endPoint.getScheme());
     }
 
-    public Proxy getProxy() {
-        return proxy;
+    public NetProxy getNetProxy() {
+        return netProxy;
     }
 }

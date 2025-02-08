@@ -33,6 +33,10 @@ import java.util.concurrent.TimeUnit;
 public class WebsocketTransportConnector implements TransportConnector {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(WebsocketTransportConnector.class);
 
+    private static URI configureWebsocketUri(EndPointConnection connection) throws Exception {
+        return new URI(connection.getEndPoint().getScheme() + "://" + connection.getEndPoint().getHost() + ":" + connection.getEndPoint().getPort() + "/connect?ticket=" + connection.getConnectionId());
+    }
+
     @Override
     public Session connect(EndPointConnection connection, ClientConnectionListener listener, ConnectOption option) throws Exception {
         LOGGER.info("[DingTalk] start websocket connection, uri={}", connection.getEndPoint().toString());
@@ -43,8 +47,13 @@ public class WebsocketTransportConnector implements TransportConnector {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {
-                if (connection.getProxy() != null) {
-                    socketChannel.pipeline().addLast(new HttpProxyHandler(connection.getProxy().address()));
+                NetProxy netProxy = connection.getNetProxy();
+                if (netProxy != null) {
+                    if (netProxy.getUsername() != null && netProxy.getPassword() != null) {
+                        socketChannel.pipeline().addLast(new HttpProxyHandler(netProxy.getProxy().address(), netProxy.getUsername(), netProxy.getPassword()));
+                    } else {
+                        socketChannel.pipeline().addLast(new HttpProxyHandler(netProxy.getProxy().address()));
+                    }
                 }
                 WebSocketClientProtocolConfig config = WebSocketClientProtocolConfig.newBuilder()
                         .maxFramePayloadLength(256 * 1024)
@@ -70,9 +79,5 @@ public class WebsocketTransportConnector implements TransportConnector {
         }).connect(connection.getEndPoint().getHost(), connection.getEndPoint().getPort());
         future.get(option.getTimeout(), TimeUnit.MILLISECONDS);
         return new WebSocketSession(future.get(), connection.getConnectionId(), option.getTtl());
-    }
-
-    private static URI configureWebsocketUri(EndPointConnection connection) throws Exception {
-        return new URI(connection.getEndPoint().getScheme() + "://" + connection.getEndPoint().getHost() + ":" + connection.getEndPoint().getPort() + "/connect?ticket=" + connection.getConnectionId());
     }
 }
