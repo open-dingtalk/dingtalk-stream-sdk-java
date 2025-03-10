@@ -12,8 +12,6 @@ import com.dingtalk.open.app.stream.network.api.NetProxy;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 import com.dingtalk.open.app.stream.protocol.CommandType;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,16 +23,15 @@ import java.util.concurrent.ExecutorService;
  * @date 2023/1/3
  */
 public class OpenDingTalkStreamClientBuilder {
-    private int consumeThreads = 16;
     private final Map<CommandType, CommandExecutor> commands = new HashMap<>();
-
     private final Set<Subscription> subscriptions = new HashSet<>();
+    private int consumeThreads = 16;
     private DingTalkCredential credential;
     private int maxConnectionCount = 1;
     private int connectionTimeToLive = 6 * 60 * 60 * 1000;
     private long connectTimeout = 3 * 1000L;
 
-    private Proxy proxy;
+    private NetProxy netProxy;
 
     private KeepAliveOption keepAliveOption = new KeepAliveOption();
 
@@ -115,7 +112,7 @@ public class OpenDingTalkStreamClientBuilder {
      * @return
      */
     public OpenDingTalkStreamClientBuilder proxy(NetProxy netProxy) {
-        this.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(netProxy.getIp(), netProxy.getPort()));
+        this.netProxy = netProxy;
         return this;
     }
 
@@ -140,7 +137,7 @@ public class OpenDingTalkStreamClientBuilder {
         option.setOpenApiHost(openApiHost);
         option.setKeepAliveOption(keepAliveOption);
         ExecutorService executor = ThreadUtil.newFixedExecutor(consumeThreads, "DingTalk-Consumer");
-        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions, proxy);
+        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions, netProxy);
     }
 
     private void subscribe(CommandType type, String topic) {

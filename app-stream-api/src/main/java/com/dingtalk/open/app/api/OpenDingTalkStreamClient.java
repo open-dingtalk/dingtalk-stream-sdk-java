@@ -10,11 +10,11 @@ import com.dingtalk.open.app.api.security.DingTalkCredential;
 import com.dingtalk.open.app.api.util.IpUtils;
 import com.dingtalk.open.app.stream.network.api.ClientConnectionListener;
 import com.dingtalk.open.app.stream.network.api.EndPointConnection;
+import com.dingtalk.open.app.stream.network.api.NetProxy;
 import com.dingtalk.open.app.stream.network.core.EndPointConnectionFactory;
 import com.dingtalk.open.app.stream.network.core.NetWorkService;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 
-import java.net.Proxy;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -30,28 +30,28 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
     private final CommandDispatcher dispatcher;
     private final ExecutorService executor;
     private final ClientOption option;
+    private final AtomicReference<Status> status;
+    private final NetProxy netProxy;
     private NetWorkService netWorkService;
     private OpenApiClient openApiClient;
     private Set<Subscription> subscriptions;
-    private final AtomicReference<Status> status;
-    private final Proxy proxy;
 
     public OpenDingTalkStreamClient(DingTalkCredential credential, CommandDispatcher dispatcher, ExecutorService executor, ClientOption option, Set<Subscription> subscriptions,
-                                    Proxy proxy) {
+                                    NetProxy netProxy) {
         this.credential = credential;
         this.dispatcher = dispatcher;
         this.executor = executor;
         this.option = option;
         this.subscriptions = Collections.unmodifiableSet(subscriptions);
         this.status = new AtomicReference<>(Status.INIT);
-        this.proxy = proxy;
+        this.netProxy = netProxy;
     }
 
     @Override
     public synchronized void start() throws OpenDingTalkAppException {
         if (status.get() == Status.INIT) {
-            this.openApiClient = OpenApiClientBuilder.create().setHost(option.getOpenApiHost()).setTimeout(option.getConnectionTTL()).setProxy(proxy).build();
-            final EndPointConnectionFactory factory = () -> openConnection(this.credential, subscriptions, proxy);
+            this.openApiClient = OpenApiClientBuilder.create().setHost(option.getOpenApiHost()).setTimeout(option.getConnectionTTL()).setProxy(netProxy).build();
+            final EndPointConnectionFactory factory = () -> openConnection(this.credential, subscriptions, netProxy);
             ClientConnectionListener listener = new AppServiceListener(dispatcher, executor);
             this.netWorkService = new NetWorkService(factory, listener, option.getMaxConnectionCount(), option.getConnectionTTL(), option.getConnectTimeout(), option.getKeepAliveOption().getKeepAliveIdleMill());
             this.netWorkService.start();
@@ -74,7 +74,7 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
         }
     }
 
-    private EndPointConnection openConnection(DingTalkCredential credential, Set<Subscription> subscriptions, Proxy proxy) throws Exception {
+    private EndPointConnection openConnection(DingTalkCredential credential, Set<Subscription> subscriptions, NetProxy proxy) throws Exception {
         OpenConnectionRequest request = new OpenConnectionRequest();
         request.setClientId(credential.getClientId());
         request.setClientSecret(credential.getClientSecret());
