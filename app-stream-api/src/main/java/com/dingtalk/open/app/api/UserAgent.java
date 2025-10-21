@@ -19,6 +19,10 @@ public class UserAgent {
         return userAgent;
     }
 
+    /**
+     * -union表示全球化的标识
+     * @return
+     */
     public String getUa() {
         return this.name + "/" + this.version + "-union";
     }
