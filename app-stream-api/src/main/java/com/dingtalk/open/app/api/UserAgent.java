@@ -20,7 +20,7 @@ public class UserAgent {
     }
 
     public String getUa() {
-        return this.name + "/" + this.version;
+        return this.name + "/" + this.version + "-union";
     }
 
 }
