@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class BotReplier {
         request.put("text", textContent);
         if (atUserIds != null && !atUserIds.isEmpty()) {
             Map<String, Object> atContent = new HashMap<>();
-            atContent.put("atUserIds", Collections.singletonList(""));
+            atContent.put("atUserIds", atUserIds);
             request.put("at", atContent);
         }
         connection.getOutputStream().write(JSON.toJSONBytes(request, WriteEnumUsingToString));
@@ -77,7 +76,7 @@ public class BotReplier {
         request.put("markdown", markdownContent);
         if (atUserIds != null && !atUserIds.isEmpty()) {
             Map<String, Object> atContent = new HashMap<>();
-            atContent.put("atUserIds", Collections.singletonList(""));
+            atContent.put("atUserIds", atUserIds);
             request.put("at", atContent);
         }
         connection.getOutputStream().write(JSON.toJSONBytes(request, WriteEnumUsingToString));
