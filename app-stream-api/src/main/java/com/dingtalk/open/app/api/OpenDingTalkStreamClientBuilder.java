@@ -106,9 +106,9 @@ public class OpenDingTalkStreamClientBuilder {
     }
 
     /**
-     * 使用海外版钉钉正式环境
+     * 使用海外DingTalk正式环境
      * <p>
-     * 海外纯血版钉钉用户请使用此方法，API地址将切换为 https://api.dingtalk.io
+     * 海外DingTalk用户请使用此方法，API地址将切换为 https://api.dingtalk.io
      * </p>
      *
      * @return builder
@@ -118,9 +118,9 @@ public class OpenDingTalkStreamClientBuilder {
     }
 
     /**
-     * 使用海外版钉钉预发环境
+     * 使用海外DingTalk预发环境
      * <p>
-     * 海外纯血版钉钉用户预发环境，API地址将切换为 https://pre-api.dingtalk.io
+     * 海外DingTalk用户预发环境，API地址将切换为 https://pre-api.dingtalk.io
      * </p>
      *
      * @return builder
