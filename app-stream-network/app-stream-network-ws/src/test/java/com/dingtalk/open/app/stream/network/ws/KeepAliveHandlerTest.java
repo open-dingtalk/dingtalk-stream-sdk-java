@@ -19,7 +19,10 @@ public class KeepAliveHandlerTest {
         KeepAliveHandler handler = new KeepAliveHandler(Duration.ofSeconds(5));
         EmbeddedChannel channel = new EmbeddedChannel(handler);
         try {
+            // Multiple idle events before handshake — reproduces Aone 84622857 NPE path.
             channel.pipeline().fireUserEventTriggered(IdleStateEvent.FIRST_READER_IDLE_STATE_EVENT);
+            channel.pipeline().fireUserEventTriggered(IdleStateEvent.READER_IDLE_STATE_EVENT);
+            channel.pipeline().fireUserEventTriggered(IdleStateEvent.WRITER_IDLE_STATE_EVENT);
             Assert.assertTrue(channel.isActive());
         } finally {
             channel.finishAndReleaseAll();
