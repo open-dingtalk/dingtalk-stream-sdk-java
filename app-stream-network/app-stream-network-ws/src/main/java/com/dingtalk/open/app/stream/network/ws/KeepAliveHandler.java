@@ -31,8 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketFrame> {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(KeepAliveHandler.class);
     private final Duration timeout;
-    private final  static HashedWheelTimer TIMER = new HashedWheelTimer();
-    private Channel channel;
+    private final static HashedWheelTimer TIMER = new HashedWheelTimer();
+    private volatile Channel channel;
     private final Map<String, Timeout> timeouts;
     private final AtomicBoolean active;
 
@@ -52,7 +52,15 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
         }
 
         if (evt instanceof IdleStateEvent) {
-            channel.eventLoop().execute(new PingTask());
+            // IdleStateHandler starts counting after TCP connect, before WS handshake.
+            // Never touch the channel field until handshake completes, otherwise NPE:
+            // connection operation failed (KeepAliveHandler.java:56)
+            if (active.get()) {
+                final Channel ch = channel != null ? channel : ctx.channel();
+                if (ch != null && ch.isActive()) {
+                    ch.eventLoop().execute(new PingTask(ch));
+                }
+            }
         }
         super.userEventTriggered(ctx, evt);
     }
@@ -69,6 +77,8 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        active.set(false);
+        channel = null;
         shutdown();
         super.channelInactive(ctx);
     }
@@ -84,24 +94,33 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
     }
 
     private class PingTask implements Runnable {
+        private final Channel target;
+
+        private PingTask(Channel target) {
+            this.target = target;
+        }
+
         @Override
         public void run() {
+            if (target == null || !target.isActive()) {
+                return;
+            }
             if (!timeouts.isEmpty()) {
                 return;
             }
             final String seq = UUID.randomUUID().toString();
             ByteBuf byteBuf = Unpooled.copiedBuffer(seq.getBytes());
             PingWebSocketFrame frame = new PingWebSocketFrame(byteBuf);
-            channel.writeAndFlush(frame).addListener(future -> {
+            target.writeAndFlush(frame).addListener(future -> {
                 if (future.isSuccess()) {
                     Timeout pingTimeout = TIMER.newTimeout(timeout -> {
                         LOGGER.warn("[DingTalk] connection ping timeout, channel is closing");
                         timeouts.remove(seq);
-                        channel.close();
+                        target.close();
                     }, timeout.toMillis(), TimeUnit.MILLISECONDS);
                     timeouts.put(seq, pingTimeout);
                 } else {
-                    channel.close();
+                    target.close();
                 }
             });
         }

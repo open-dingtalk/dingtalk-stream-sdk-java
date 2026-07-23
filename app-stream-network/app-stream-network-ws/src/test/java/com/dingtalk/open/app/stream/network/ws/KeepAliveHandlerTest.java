@@ -1,0 +1,42 @@
+package com.dingtalk.open.app.stream.network.ws;
+
+import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
+import io.netty.handler.timeout.IdleStateEvent;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.time.Duration;
+
+/**
+ * Regression for Aone 84622857 / customer logs:
+ * IdleStateEvent before WS handshake must not NPE in KeepAliveHandler.
+ */
+public class KeepAliveHandlerTest {
+
+    @Test
+    public void idleBeforeHandshakeDoesNotThrow() {
+        KeepAliveHandler handler = new KeepAliveHandler(Duration.ofSeconds(5));
+        EmbeddedChannel channel = new EmbeddedChannel(handler);
+        try {
+            channel.pipeline().fireUserEventTriggered(IdleStateEvent.FIRST_READER_IDLE_STATE_EVENT);
+            Assert.assertTrue(channel.isActive());
+        } finally {
+            channel.finishAndReleaseAll();
+        }
+    }
+
+    @Test
+    public void idleAfterHandshakeDoesNotThrow() {
+        KeepAliveHandler handler = new KeepAliveHandler(Duration.ofSeconds(5));
+        EmbeddedChannel channel = new EmbeddedChannel(handler);
+        try {
+            channel.pipeline().fireUserEventTriggered(
+                    WebSocketClientProtocolHandler.ClientHandshakeStateEvent.HANDSHAKE_COMPLETE);
+            channel.pipeline().fireUserEventTriggered(IdleStateEvent.FIRST_READER_IDLE_STATE_EVENT);
+            Assert.assertTrue(channel.isActive());
+        } finally {
+            channel.finishAndReleaseAll();
+        }
+    }
+}
