@@ -15,14 +15,12 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author feiyin
@@ -33,13 +31,13 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
     private final Duration timeout;
     private final static HashedWheelTimer TIMER = new HashedWheelTimer();
     private volatile Channel channel;
-    private final Map<String, Timeout> timeouts;
     private final AtomicBoolean active;
+    private final AtomicReference<PendingPing> pendingPing;
 
     public KeepAliveHandler(Duration timeout) {
         this.timeout = timeout;
         this.active = new AtomicBoolean(false);
-        this.timeouts = new ConcurrentHashMap<>();
+        this.pendingPing = new AtomicReference<>();
     }
 
 
@@ -68,9 +66,11 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, PongWebSocketFrame msg) throws Exception {
         byte[] data = NettyByteBufUtils.getBytes(msg.content());
-        Timeout out = timeouts.remove(new String(data));
-        if (out != null) {
-            out.cancel();
+        PendingPing ping = pendingPing.get();
+        if (ping != null
+                && ping.seq.equals(new String(data, StandardCharsets.UTF_8))
+                && pendingPing.compareAndSet(ping, null)) {
+            ping.cancelTimeout();
         }
     }
 
@@ -85,11 +85,25 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
 
 
     private void shutdown() {
-        Iterator<Entry<String, Timeout>> it = timeouts.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<String, Timeout> entry = it.next();
-            entry.getValue().cancel();
-            it.remove();
+        PendingPing ping = pendingPing.getAndSet(null);
+        if (ping != null) {
+            ping.cancelTimeout();
+        }
+    }
+
+    private static class PendingPing {
+        private final String seq;
+        private volatile Timeout timeout;
+
+        private PendingPing(String seq) {
+            this.seq = seq;
+        }
+
+        private void cancelTimeout() {
+            Timeout current = timeout;
+            if (current != null) {
+                current.cancel();
+            }
         }
     }
 
@@ -102,24 +116,36 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
 
         @Override
         public void run() {
-            if (target == null || !target.isActive()) {
-                return;
-            }
-            if (!timeouts.isEmpty()) {
+            if (!active.get() || target == null || !target.isActive()) {
                 return;
             }
             final String seq = UUID.randomUUID().toString();
-            ByteBuf byteBuf = Unpooled.copiedBuffer(seq.getBytes());
+            final PendingPing ping = new PendingPing(seq);
+            if (!pendingPing.compareAndSet(null, ping)) {
+                return;
+            }
+
+            Timeout pingTimeout = TIMER.newTimeout(ignored -> {
+                if (pendingPing.compareAndSet(ping, null)) {
+                    active.set(false);
+                    LOGGER.warn("[DingTalk] connection ping timeout, channel is closing");
+                    target.close();
+                }
+            }, timeout.toMillis(), TimeUnit.MILLISECONDS);
+            ping.timeout = pingTimeout;
+
+            // channelInactive may clear the pending ping while the timeout is being installed.
+            if (pendingPing.get() != ping) {
+                pingTimeout.cancel();
+                return;
+            }
+
+            ByteBuf byteBuf = Unpooled.copiedBuffer(seq.getBytes(StandardCharsets.UTF_8));
             PingWebSocketFrame frame = new PingWebSocketFrame(byteBuf);
             target.writeAndFlush(frame).addListener(future -> {
-                if (future.isSuccess()) {
-                    Timeout pingTimeout = TIMER.newTimeout(timeout -> {
-                        LOGGER.warn("[DingTalk] connection ping timeout, channel is closing");
-                        timeouts.remove(seq);
-                        target.close();
-                    }, timeout.toMillis(), TimeUnit.MILLISECONDS);
-                    timeouts.put(seq, pingTimeout);
-                } else {
+                if (!future.isSuccess() && pendingPing.compareAndSet(ping, null)) {
+                    active.set(false);
+                    pingTimeout.cancel();
                     target.close();
                 }
             });
