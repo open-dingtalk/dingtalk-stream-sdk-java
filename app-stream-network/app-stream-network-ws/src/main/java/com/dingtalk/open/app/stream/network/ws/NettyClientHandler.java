@@ -54,8 +54,6 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolRequ
             LOGGER.error("[DingTalk] connection operation failed, connectionId={}", connectionId, cause);
         }
         // Close the channel so session pool can reconnect instead of leaving a half-dead connection.
-        if (ctx != null && ctx.channel() != null && ctx.channel().isActive()) {
-            ctx.close();
-        }
+        ctx.close();
     }
 }

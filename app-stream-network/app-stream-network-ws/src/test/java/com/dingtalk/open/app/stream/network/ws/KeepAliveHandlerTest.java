@@ -1,8 +1,10 @@
 package com.dingtalk.open.app.stream.network.ws;
 
 import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.ReferenceCountUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,15 +32,21 @@ public class KeepAliveHandlerTest {
     }
 
     @Test
-    public void idleAfterHandshakeDoesNotThrow() {
+    public void idleAfterHandshakeSendsPing() {
         KeepAliveHandler handler = new KeepAliveHandler(Duration.ofSeconds(5));
         EmbeddedChannel channel = new EmbeddedChannel(handler);
+        Object outbound = null;
         try {
             channel.pipeline().fireUserEventTriggered(
                     WebSocketClientProtocolHandler.ClientHandshakeStateEvent.HANDSHAKE_COMPLETE);
             channel.pipeline().fireUserEventTriggered(IdleStateEvent.FIRST_READER_IDLE_STATE_EVENT);
+            channel.runPendingTasks();
+            outbound = channel.readOutbound();
+            Assert.assertTrue(outbound instanceof PingWebSocketFrame);
+            Assert.assertNull(channel.readOutbound());
             Assert.assertTrue(channel.isActive());
         } finally {
+            ReferenceCountUtil.release(outbound);
             channel.finishAndReleaseAll();
         }
     }
