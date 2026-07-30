@@ -10,13 +10,15 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
 
+import java.io.IOException;
+
 /**
  * @author feiyin
  * @date 2023/3/27
  */
 public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolRequest> {
 
-    private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(ProtocolFrameHandler.class);
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(NettyClientHandler.class);
 
     private final ClientConnectionListener listener;
     private final String connectionId;
@@ -50,8 +52,15 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolRequ
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof WebSocketClientHandshakeException) {
             LOGGER.error("[DingTalk] connection establish error, please check connectionId={}", connectionId, cause);
+        } else if (cause instanceof IOException) {
+            // TCP resets and other channel I/O failures are recoverable. The
+            // channel is closed below and the session pool establishes a
+            // replacement connection on its next maintenance run.
+            LOGGER.warn("[DingTalk] connection I/O failed, connectionId={}", connectionId, cause);
         } else {
             LOGGER.error("[DingTalk] connection operation failed, connectionId={}", connectionId, cause);
         }
+        // Close the channel so session pool can reconnect instead of leaving a half-dead connection.
+        ctx.close();
     }
 }

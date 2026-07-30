@@ -18,7 +18,7 @@ public class NettyInternalLogger implements InternalLogger {
 
     @Override
     public void warn(String format, Object... args) {
-        this.delegate.error(format, args);
+        this.delegate.warn(format, args);
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.dingtalk.open.app.stream.network.api.Context;
 import com.dingtalk.open.app.stream.protocol.CommandType;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -20,8 +21,9 @@ public class CommandDispatcher {
     private final Map<CommandType, CommandExecutor> registry;
 
     public CommandDispatcher(Map<CommandType, CommandExecutor> registry) {
-        registry.putIfAbsent(CommandType.SYSTEM, new SystemCommandExecutor());
-        this.registry = Collections.unmodifiableMap(registry);
+        Map<CommandType, CommandExecutor> registrySnapshot = new HashMap<>(registry);
+        registrySnapshot.putIfAbsent(CommandType.SYSTEM, new SystemCommandExecutor());
+        this.registry = Collections.unmodifiableMap(registrySnapshot);
     }
 
     /**

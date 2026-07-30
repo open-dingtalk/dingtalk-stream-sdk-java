@@ -11,13 +11,18 @@ import com.dingtalk.open.app.api.util.IpUtils;
 import com.dingtalk.open.app.stream.network.api.ClientConnectionListener;
 import com.dingtalk.open.app.stream.network.api.EndPointConnection;
 import com.dingtalk.open.app.stream.network.api.NetProxy;
+import com.dingtalk.open.app.stream.network.api.NetworkSharedResources;
+import com.dingtalk.open.app.stream.network.api.logger.InternalLogger;
+import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
 import com.dingtalk.open.app.stream.network.core.EndPointConnectionFactory;
 import com.dingtalk.open.app.stream.network.core.NetWorkService;
 import com.dingtalk.open.app.stream.network.core.Subscription;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -26,6 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @date 2022/12/26
  */
 class OpenDingTalkStreamClient implements OpenDingTalkClient {
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(OpenDingTalkStreamClient.class);
+    private static final long EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS = 5L;
     private final DingTalkCredential credential;
     private final CommandDispatcher dispatcher;
     private final ExecutorService executor;
@@ -35,6 +42,7 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
     private NetWorkService netWorkService;
     private OpenApiClient openApiClient;
     private Set<Subscription> subscriptions;
+    private boolean networkResourcesAcquired;
 
     public OpenDingTalkStreamClient(DingTalkCredential credential, CommandDispatcher dispatcher, ExecutorService executor, ClientOption option, Set<Subscription> subscriptions,
                                     NetProxy netProxy) {
@@ -42,7 +50,7 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
         this.dispatcher = dispatcher;
         this.executor = executor;
         this.option = option;
-        this.subscriptions = Collections.unmodifiableSet(subscriptions);
+        this.subscriptions = Collections.unmodifiableSet(new HashSet<>(subscriptions));
         this.status = new AtomicReference<>(Status.INIT);
         this.netProxy = netProxy;
     }
@@ -50,12 +58,33 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
     @Override
     public synchronized void start() throws OpenDingTalkAppException {
         if (status.get() == Status.INIT) {
-            this.openApiClient = OpenApiClientBuilder.create().setHost(option.getOpenApiHost()).setTimeout(option.getConnectionTTL()).setProxy(netProxy).build();
-            final EndPointConnectionFactory factory = () -> openConnection(this.credential, subscriptions, netProxy);
-            ClientConnectionListener listener = new AppServiceListener(dispatcher, executor);
-            this.netWorkService = new NetWorkService(factory, listener, option.getMaxConnectionCount(), option.getConnectionTTL(), option.getConnectTimeout(), option.getKeepAliveOption().getKeepAliveIdleMill());
-            this.netWorkService.start();
-            this.status.set(Status.ACTIVE);
+            NetworkSharedResources.acquireNetWorkEventLoopGroup();
+            networkResourcesAcquired = true;
+            try {
+                this.openApiClient = OpenApiClientBuilder.create()
+                        .setHost(option.getOpenApiHost())
+                        .setTimeout(toHttpTimeout(option.getConnectTimeout()))
+                        .setProxy(netProxy)
+                        .build();
+                final EndPointConnectionFactory factory = () -> openConnection(this.credential, subscriptions, netProxy);
+                ClientConnectionListener listener = new AppServiceListener(dispatcher, executor);
+                this.netWorkService = new NetWorkService(factory, listener, option.getMaxConnectionCount(), option.getConnectionTTL(), option.getConnectTimeout(), option.getKeepAliveOption().getKeepAliveIdleMill());
+                this.netWorkService.start();
+                this.status.set(Status.ACTIVE);
+            } catch (RuntimeException | Error e) {
+                try {
+                    if (this.netWorkService != null) {
+                        this.netWorkService.shutdown();
+                    }
+                } catch (Exception shutdownError) {
+                    e.addSuppressed(shutdownError);
+                } finally {
+                    shutdownConsumerExecutor();
+                    releaseNetworkResources();
+                    status.set(Status.INACTIVE);
+                }
+                throw e;
+            }
         } else if (status.get() == Status.INACTIVE) {
             throw new OpenDingTalkAppException(DingTalkAppError.CLIENT_STATE_ERROR);
         }
@@ -63,15 +92,47 @@ class OpenDingTalkStreamClient implements OpenDingTalkClient {
 
     @Override
     public synchronized void stop() throws Exception {
-        if (status.get() == Status.ACTIVE) {
-            if (this.netWorkService != null) {
-                this.netWorkService.shutdown();
+        if (status.get() != Status.INACTIVE) {
+            try {
+                if (this.netWorkService != null) {
+                    this.netWorkService.shutdown();
+                }
+            } finally {
+                try {
+                    shutdownConsumerExecutor();
+                } finally {
+                    releaseNetworkResources();
+                    status.set(Status.INACTIVE);
+                }
             }
-            if (executor != null) {
-                this.executor.shutdown();
-            }
-            status.set(Status.INACTIVE);
         }
+    }
+
+    private void shutdownConsumerExecutor() {
+        if (executor == null) {
+            return;
+        }
+        this.executor.shutdownNow();
+        try {
+            if (!this.executor.awaitTermination(EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                LOGGER.warn("[DingTalk] consumer executor did not terminate within {} seconds",
+                        EXECUTOR_SHUTDOWN_TIMEOUT_SECONDS);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.warn("[DingTalk] interrupted while waiting for consumer executor shutdown");
+        }
+    }
+
+    private void releaseNetworkResources() {
+        if (networkResourcesAcquired) {
+            NetworkSharedResources.releaseNetWorkEventLoopGroup();
+            networkResourcesAcquired = false;
+        }
+    }
+
+    static int toHttpTimeout(long timeout) {
+        return (int) Math.min(timeout, Integer.MAX_VALUE);
     }
 
     private EndPointConnection openConnection(DingTalkCredential credential, Set<Subscription> subscriptions, NetProxy proxy) throws Exception {

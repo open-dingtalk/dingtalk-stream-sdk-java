@@ -90,7 +90,7 @@ public class OpenDingTalkStreamClientBuilder {
 
 
     public OpenDingTalkStreamClientBuilder connectTimeout(long connectTimeout) {
-        this.connectTimeout = connectTimeout;
+        this.connectTimeout = Preconditions.checkPositive(connectTimeout);
         return this;
     }
 
@@ -154,6 +154,7 @@ public class OpenDingTalkStreamClientBuilder {
 
 
     public OpenDingTalkClient build() {
+        DingTalkCredential validCredential = Preconditions.notNull(credential);
         ClientOption option = new ClientOption();
         option.setConnectTimeout(connectTimeout);
         option.setMaxConnectionCount(maxConnectionCount);
@@ -161,7 +162,8 @@ public class OpenDingTalkStreamClientBuilder {
         option.setOpenApiHost(openApiHost);
         option.setKeepAliveOption(keepAliveOption);
         ExecutorService executor = ThreadUtil.newFixedExecutor(consumeThreads, "DingTalk-Consumer");
-        return new OpenDingTalkStreamClient(credential, new CommandDispatcher(commands), executor, option, subscriptions, netProxy);
+        return new OpenDingTalkStreamClient(validCredential, new CommandDispatcher(commands),
+                executor, option, subscriptions, netProxy);
     }
 
     private void subscribe(CommandType type, String topic) {
