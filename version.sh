@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-mvn versions:set -DnewVersion=1.3.13
+mvn versions:set -DnewVersion=1.3.14-beta.1
