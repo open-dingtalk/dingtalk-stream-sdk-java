@@ -24,6 +24,7 @@ public class DefaultSessionPool implements SessionPool {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(DefaultSessionPool.class);
     private static final int MAX_RETRY_COUNT = 3;
     private static final int INTERVAL = 5 * 1000;
+    private static final int SHUTDOWN_TIMEOUT_SECONDS = 5;
     private final ScheduledExecutorService scheduledExecutorService;
     private final Map<String, Session> sessions;
     private final AtomicBoolean status;
@@ -84,7 +85,7 @@ public class DefaultSessionPool implements SessionPool {
      */
     private void evict() {
         for (Map.Entry<String, Session> entry : sessions.entrySet()) {
-            Session session = sessions.get(entry.getKey());
+            Session session = entry.getValue();
             if (session.isExpired() || !session.isActive()) {
                 closeSession(session.getId());
             }
@@ -104,6 +105,15 @@ public class DefaultSessionPool implements SessionPool {
                 } catch (Exception e) {
                     LOGGER.error("[DingTalk] close session failed, connectionId={}", sessionId, e);
                 }
+            }
+            try {
+                if (!scheduledExecutorService.awaitTermination(SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                    LOGGER.warn("[DingTalk] connection scheduler did not terminate within {} seconds",
+                            SHUTDOWN_TIMEOUT_SECONDS);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                LOGGER.warn("[DingTalk] interrupted while waiting for connection scheduler shutdown");
             }
         }
     }
@@ -139,7 +149,16 @@ public class DefaultSessionPool implements SessionPool {
                 }
                 session.goAway();
                 //发起建连
-                scheduledExecutorService.execute(new ConnectionTask());
+                if (isActive()) {
+                    try {
+                        scheduledExecutorService.execute(new ConnectionTask());
+                    } catch (RejectedExecutionException e) {
+                        if (isActive()) {
+                            LOGGER.warn("[DingTalk] immediate reconnect task was rejected, connectionId={}",
+                                    connectionId);
+                        }
+                    }
+                }
             }
         }
     }

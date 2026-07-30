@@ -6,6 +6,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -15,6 +16,15 @@ public class NettyClientHandlerTest {
 
     @Test
     public void exceptionCaughtClosesActiveChannel() {
+        assertExceptionClosesChannel(new RuntimeException("simulated handler failure"));
+    }
+
+    @Test
+    public void connectionResetClosesActiveChannel() {
+        assertExceptionClosesChannel(new IOException("Connection reset by peer"));
+    }
+
+    private void assertExceptionClosesChannel(Throwable failure) {
         final AtomicBoolean disconnected = new AtomicBoolean(false);
         NettyClientHandler handler = new NettyClientHandler("conn-test", new ClientConnectionListener() {
             @Override
@@ -29,7 +39,7 @@ public class NettyClientHandlerTest {
 
         EmbeddedChannel channel = new EmbeddedChannel(handler);
         Assert.assertTrue(channel.isActive());
-        channel.pipeline().fireExceptionCaught(new RuntimeException("simulated io failure"));
+        channel.pipeline().fireExceptionCaught(failure);
 
         // EmbeddedChannel closes synchronously on close()
         Assert.assertFalse("channel should be closed after exceptionCaught", channel.isActive());
