@@ -97,16 +97,14 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public void shutdown() {
         if (status.compareAndSet(true, false)) {
-            scheduledExecutorService.execute(() -> {
-                for (String sessionId : sessions.keySet()) {
-                    try {
-                        closeSession(sessionId);
-                    } catch (Exception e) {
-                        LOGGER.error("[DingTalk] close session failed, connectionId={}", sessionId, e);
-                    }
+            scheduledExecutorService.shutdownNow();
+            for (String sessionId : sessions.keySet()) {
+                try {
+                    closeSession(sessionId);
+                } catch (Exception e) {
+                    LOGGER.error("[DingTalk] close session failed, connectionId={}", sessionId, e);
                 }
-            });
-            scheduledExecutorService.execute(scheduledExecutorService::shutdown);
+            }
         }
     }
 
@@ -167,6 +165,10 @@ public class DefaultSessionPool implements SessionPool {
                     }
                     Session session = Connector.connect(connection, new TransportConnectionListener(), connectionTimeout, connectionTTL, keepAliveIdle);
                     if (session == null) {
+                        return;
+                    }
+                    if (!isActive()) {
+                        session.close();
                         return;
                     }
                     LOGGER.info("[DingTalk] connection is established, connectionId={}", session.getId());

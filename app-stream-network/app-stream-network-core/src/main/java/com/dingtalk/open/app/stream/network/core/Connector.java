@@ -9,6 +9,7 @@ import com.dingtalk.open.app.stream.network.api.logger.InternalLoggerFactory;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -39,7 +40,9 @@ public class Connector {
         ensureActive();
         TransportConnector connector = CONNECTOR_REGISTRY.get(connection.getProtocol());
         if (connector == null) {
-            throw new DingTalkNetworkException(NetWorkError.PROTOCOL_ILLEGAL);
+            throw new DingTalkNetworkException(
+                    NetWorkError.PROTOCOL_ILLEGAL,
+                    "no transport connector registered for protocol " + connection.getProtocol());
         }
         ConnectOption option = ConnectOption.builder().setTimeout(timeout).setTtl(ttl).setKeepAliveIdle(Duration.ofMillis(keepAliveIdle)).setKeepAliveTimeout(KEEP_ALIVE_TIMEOUT).build();
         return connector.connect(connection, listener, option);
@@ -55,7 +58,8 @@ public class Connector {
             if (INIT) {
                 return;
             }
-            ServiceLoader<TransportConnector> transportConnectors = ServiceLoader.load(TransportConnector.class);
+            ServiceLoader<TransportConnector> transportConnectors = ServiceLoader.load(
+                    TransportConnector.class, Connector.class.getClassLoader());
             Iterator<TransportConnector> it = transportConnectors.iterator();
             while (it.hasNext()) {
                 TransportConnector transportConnector = it.next();
@@ -67,9 +71,17 @@ public class Connector {
                     }
                 }
             }
+            if (CONNECTOR_REGISTRY.isEmpty()) {
+                throw new DingTalkNetworkException(
+                        NetWorkError.OPEN_CONNECTION_ERROR,
+                        "no TransportConnector implementation was found by ServiceLoader");
+            }
             INIT = true;
-        } catch (Exception e) {
+        } catch (DingTalkNetworkException e) {
+            throw e;
+        } catch (ServiceConfigurationError | RuntimeException e) {
             LOGGER.error("[DingTalk] client init transport failed, {}", e);
+            throw new DingTalkNetworkException(NetWorkError.OPEN_CONNECTION_ERROR, e);
         } finally {
             INIT_LOCK.unlock();
         }

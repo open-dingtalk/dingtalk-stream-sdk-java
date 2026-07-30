@@ -12,12 +12,11 @@ import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,7 +28,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketFrame> {
     private static final InternalLogger LOGGER = InternalLoggerFactory.getLogger(KeepAliveHandler.class);
     private final Duration timeout;
-    private final static HashedWheelTimer TIMER = new HashedWheelTimer();
     private volatile Channel channel;
     private final AtomicBoolean active;
     private final AtomicReference<PendingPing> pendingPing;
@@ -93,16 +91,16 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
 
     private static class PendingPing {
         private final String seq;
-        private volatile Timeout timeout;
+        private volatile ScheduledFuture<?> timeout;
 
         private PendingPing(String seq) {
             this.seq = seq;
         }
 
         private void cancelTimeout() {
-            Timeout current = timeout;
+            ScheduledFuture<?> current = timeout;
             if (current != null) {
-                current.cancel();
+                current.cancel(false);
             }
         }
     }
@@ -125,7 +123,7 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
                 return;
             }
 
-            Timeout pingTimeout = TIMER.newTimeout(ignored -> {
+            ScheduledFuture<?> pingTimeout = target.eventLoop().schedule(() -> {
                 if (pendingPing.compareAndSet(ping, null)) {
                     active.set(false);
                     LOGGER.warn("[DingTalk] connection ping timeout, channel is closing");
@@ -136,7 +134,7 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
 
             // channelInactive may clear the pending ping while the timeout is being installed.
             if (pendingPing.get() != ping) {
-                pingTimeout.cancel();
+                pingTimeout.cancel(false);
                 return;
             }
 
@@ -145,7 +143,7 @@ public class KeepAliveHandler extends SimpleChannelInboundHandler<PongWebSocketF
             target.writeAndFlush(frame).addListener(future -> {
                 if (!future.isSuccess() && pendingPing.compareAndSet(ping, null)) {
                     active.set(false);
-                    pingTimeout.cancel();
+                    pingTimeout.cancel(false);
                     target.close();
                 }
             });

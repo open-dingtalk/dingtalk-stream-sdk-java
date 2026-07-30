@@ -24,6 +24,11 @@ public class ProtocolConnectHandlerTest {
         EmbeddedChannel channel = new EmbeddedChannel(new ProtocolConnectHandler(future, 10L));
         try {
             channel.connect(new InetSocketAddress("localhost", 1234)).syncUninterruptibly();
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
+            while (!future.isDone() && System.nanoTime() < deadline) {
+                Thread.sleep(10);
+                channel.runScheduledPendingTasks();
+            }
             try {
                 future.get(1, TimeUnit.SECONDS);
                 Assert.fail("connect future should time out");
