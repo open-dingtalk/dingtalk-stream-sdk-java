@@ -6,9 +6,16 @@ on:
       - develop
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      deployment_id:
+        description: Central deployment ID to publish
+        required: true
+        type: string
 
 jobs:
   build:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -43,3 +50,54 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+  publish-deployment:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish validated Central deployment
+        env:
+          DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$DEPLOYMENT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
+            echo "Invalid Central deployment ID"
+            exit 1
+          fi
+
+          AUTH_TOKEN=$(printf '%s:%s' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" | base64 | tr -d '\n')
+          AUTH_HEADER="Authorization: Bearer $AUTH_TOKEN"
+          CENTRAL_API="https://central.sonatype.com/api/v1/publisher"
+
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "$AUTH_HEADER" \
+            "$CENTRAL_API/deployment/$DEPLOYMENT_ID"
+
+          for attempt in {1..60}; do
+            RESPONSE=$(curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header "$AUTH_HEADER" \
+              "$CENTRAL_API/status?id=$DEPLOYMENT_ID")
+            STATE=$(jq -r '.deploymentState' <<<"$RESPONSE")
+            echo "Central deployment state: $STATE"
+
+            case "$STATE" in
+              PUBLISHED)
+                exit 0
+                ;;
+              FAILED)
+                jq '.errors // empty' <<<"$RESPONSE"
+                exit 1
+                ;;
+            esac
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for Central deployment to publish"
+          exit 1
